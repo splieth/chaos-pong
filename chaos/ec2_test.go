@@ -36,6 +36,15 @@ func (m mockEC2Client) DescribeInstances(in *ec2.DescribeInstancesInput) (*ec2.D
 	return &output, nil
 }
 
+func (m mockEC2Client) TerminateInstances(in *ec2.TerminateInstancesInput) (*ec2.TerminateInstancesOutput, error) {
+	output := ec2.TerminateInstancesOutput{
+		TerminatingInstances: []*ec2.InstanceStateChange{{
+			InstanceId: in.InstanceIds[0],
+		}},
+	}
+	return &output, nil
+}
+
 func generateInstanceId() *string {
 	id := "i-" + string(rand.Int())
 	return &id
@@ -45,4 +54,11 @@ func TestListInstances(t *testing.T) {
 	client := mockEC2Client{}
 	c := ListInstances(client, []ec2.Instance{}, nil)
 	assert.Equal(t, 4, len(c))
+}
+
+func TestTerminateInstance(t *testing.T) {
+	client := mockEC2Client{}
+	instanceId := "stirb"
+	res, _ := TerminateInstance(client, []*string{&instanceId})
+	assert.Equal(t, []*string{&instanceId}, res)
 }
