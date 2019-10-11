@@ -16,6 +16,7 @@ type Result struct {
 
 var functions = []Chaos{
 	EC2InstanceTerminateChaos{},
+	EBSDestroyChaos{},
 }
 
 func init() {

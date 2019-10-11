@@ -1,6 +1,7 @@
 package chaos
 
 import (
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/ec2/ec2iface"
@@ -17,6 +18,41 @@ type EC2InstanceTerminateChaos struct {
 	Chaos
 }
 
+type EBSDestroyChaos struct {
+	Chaos
+}
+
+func (e EBSDestroyChaos) Terminate() Result {
+	client := ec2Client()
+	instances := listInstances(client, []ec2.Instance{}, nil)
+	instance := instances[rand.Intn(len(instances))]
+	_, err := terminateEbsVolume(client, instance.BlockDeviceMappings[0].Ebs.VolumeId)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return Result{Success: true, Message: "Terminated stuff"}
+}
+
+func terminateEbsVolume(client *ec2.EC2, volumeId *string) (*string, error) {
+	detachInput := ec2.DetachVolumeInput{
+		Force:    aws.Bool(true),
+		VolumeId: volumeId,
+	}
+	_, err := client.DetachVolume(&detachInput)
+	if err != nil {
+		return aws.String(""), err
+	}
+
+	input := ec2.DeleteVolumeInput{
+		VolumeId: volumeId,
+	}
+	_, err = client.DeleteVolume(&input)
+	if err != nil {
+		return aws.String(""), err
+	}
+	return volumeId, nil
+}
+
 func (e EC2InstanceTerminateChaos) Terminate() Result {
 	client := ec2Client()
 	instances := listInstances(client, []ec2.Instance{}, nil)
@@ -26,7 +62,6 @@ func (e EC2InstanceTerminateChaos) Terminate() Result {
 		log.Fatal(err)
 	}
 	return Result{Success: true, Message: "Terminated stuff"}
-
 }
 
 func ec2Client() *ec2.EC2 {
