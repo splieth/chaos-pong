@@ -52,13 +52,13 @@ func generateInstanceId() *string {
 
 func TestListInstances(t *testing.T) {
 	client := mockEC2Client{}
-	c := ListInstances(client, []ec2.Instance{}, nil)
+	c := listInstances(client, []ec2.Instance{}, nil)
 	assert.Equal(t, 4, len(c))
 }
 
 func TestTerminateInstance(t *testing.T) {
 	client := mockEC2Client{}
 	instanceId := "stirb"
-	res, _ := TerminateInstance(client, []*string{&instanceId})
+	res, _ := terminateInstance(client, []*string{&instanceId})
 	assert.Equal(t, []*string{&instanceId}, res)
 }

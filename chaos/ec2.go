@@ -1,7 +1,6 @@
 package chaos
 
 import (
-	"fmt"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/ec2/ec2iface"
@@ -14,19 +13,31 @@ func init() {
 	rand.Seed(time.Now().Unix())
 }
 
-type EC2Client struct {
-	Client *ec2.EC2
+type EC2InstanceTerminateChaos struct {
+	Chaos
 }
 
-func (c *EC2Client) CreateClient() {
+func (e EC2InstanceTerminateChaos) Terminate() Result {
+	client := ec2Client()
+	instances := listInstances(client, []ec2.Instance{}, nil)
+	instance := instances[rand.Intn(len(instances))]
+	_, err := terminateInstance(client, []*string{instance.InstanceId})
+	if err != nil {
+		log.Fatal(err)
+	}
+	return Result{Success: true, Message: "Terminated stuff"}
+
+}
+
+func ec2Client() *ec2.EC2 {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 
-	c.Client = ec2.New(sess)
+	return ec2.New(sess)
 }
 
-func ListInstances(svc ec2iface.EC2API, instances []ec2.Instance, nextToken *string) []ec2.Instance {
+func listInstances(svc ec2iface.EC2API, instances []ec2.Instance, nextToken *string) []ec2.Instance {
 	maxResults := int64(100)
 	input := ec2.DescribeInstancesInput{
 		NextToken:  nextToken,
@@ -44,13 +55,13 @@ func ListInstances(svc ec2iface.EC2API, instances []ec2.Instance, nextToken *str
 	}
 
 	if res.NextToken != nil {
-		return ListInstances(svc, instances, res.NextToken)
+		return listInstances(svc, instances, res.NextToken)
 	}
 
 	return instances
 }
 
-func TerminateInstance(svc ec2iface.EC2API, instanceIds []*string) ([]*string, error) {
+func terminateInstance(svc ec2iface.EC2API, instanceIds []*string) ([]*string, error) {
 	input := ec2.TerminateInstancesInput{
 		InstanceIds: instanceIds,
 	}
@@ -63,14 +74,4 @@ func TerminateInstance(svc ec2iface.EC2API, instanceIds []*string) ([]*string, e
 		res = append(res, instanceId.InstanceId)
 	}
 	return res, nil
-}
-
-func Terminate(svc ec2iface.EC2API) {
-	instances := ListInstances(svc, []ec2.Instance{}, nil)
-	instance := instances[rand.Intn(len(instances))]
-	terminated, err := TerminateInstance(svc, []*string{instance.InstanceId})
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(*terminated[0])
 }
