@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const FPS = 1
+const FPS = 2
 const GAME_HEIGHT = 32
 const GAME_WIDTH = 64
 
@@ -103,6 +103,7 @@ func loop(screen tcell.Screen) {
 		ball.handleCollision(topCorner, bottomCorner)
 		ball.move()
 		draw(screen, topCorner, bottomCorner, ball)
-		time.Sleep((1 / FPS) * 100 * time.Millisecond)
+		duration := (100 / FPS) * time.Millisecond
+		time.Sleep(duration)
 	}
 }
