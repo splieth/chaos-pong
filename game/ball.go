@@ -4,12 +4,11 @@ import "github.com/gdamore/tcell"
 
 type Ball struct {
 	sprite Sprite
-	speed  int
 }
 
 func (ball *Ball) getNextPos() Vector {
-	newX := ball.sprite.position.x + ball.sprite.direction.x*ball.speed
-	newY := ball.sprite.position.y + ball.sprite.direction.y*ball.speed
+	newX := ball.sprite.position.x + ball.sprite.direction.x
+	newY := ball.sprite.position.y + ball.sprite.direction.y
 	return Vector{newX, newY}
 }
 

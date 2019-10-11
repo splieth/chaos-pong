@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	FPS           = 3
+	FPS = 3
 )
 
 func Start(screen tcell.Screen) {
@@ -58,9 +58,8 @@ func loop(screen tcell.Screen) {
 	ball := Ball{
 		sprite: Sprite{
 			position:  Vector{(ballCanvas.width / 2) + CanvasPadding, (ballCanvas.height / 2) + CanvasPadding},
-			direction: Vector{x: 1, y: 1,},
+			direction: Vector{x: 2, y: 2,},
 		},
-		speed: 1,
 	}
 	for {
 		ball.handleCollision(&ballCanvas)
