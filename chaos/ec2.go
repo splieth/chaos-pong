@@ -1,6 +1,7 @@
 package chaos
 
 import (
+	"fmt"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/ec2/ec2iface"
@@ -14,7 +15,7 @@ func init() {
 }
 
 type EC2Client struct {
-	ec2Client *ec2.EC2
+	Client *ec2.EC2
 }
 
 func (c *EC2Client) CreateClient() {
@@ -22,7 +23,7 @@ func (c *EC2Client) CreateClient() {
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 
-	c.ec2Client = ec2.New(sess)
+	c.Client = ec2.New(sess)
 }
 
 func ListInstances(svc ec2iface.EC2API, instances []ec2.Instance, nextToken *string) []ec2.Instance {
@@ -67,8 +68,9 @@ func TerminateInstance(svc ec2iface.EC2API, instanceIds []*string) ([]*string, e
 func Terminate(svc ec2iface.EC2API) {
 	instances := ListInstances(svc, []ec2.Instance{}, nil)
 	instance := instances[rand.Intn(len(instances))]
-	_, err := TerminateInstance(svc, []*string{instance.InstanceId})
+	terminated, err := TerminateInstance(svc, []*string{instance.InstanceId})
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println(*terminated[0])
 }
