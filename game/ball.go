@@ -2,6 +2,10 @@ package game
 
 import "github.com/gdamore/tcell"
 
+const (
+	ballColor = tcell.ColorOrangeRed
+)
+
 type Ball struct {
 	sprite Sprite
 }
@@ -14,5 +18,5 @@ func (ball *Ball) getNextPos() Vector {
 
 func (ball *Ball) move(screen tcell.Screen) {
 	ball.sprite.position = ball.getNextPos()
-	screen.SetContent(ball.sprite.position.x, ball.sprite.position.y, '●', nil, tcell.StyleDefault.Background(tcell.ColorRebeccaPurple).Foreground(tcell.ColorOrangeRed))
+	screen.SetContent(ball.sprite.position.x, ball.sprite.position.y, '●', nil, tcell.StyleDefault.Background(backgroundColor).Foreground(ballColor))
 }

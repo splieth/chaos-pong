@@ -16,7 +16,7 @@ type Canvas struct {
 func (c *Canvas) draw(screen tcell.Screen) {
 	for col := c.x; col < c.width; col++ {
 		for row := c.y; row < c.height; row++ {
-			screen.SetContent(col, row, ' ', nil, tcell.StyleDefault.Background(tcell.ColorRebeccaPurple))
+			screen.SetContent(col, row, ' ', nil, tcell.StyleDefault.Background(backgroundColor))
 		}
 	}
 }

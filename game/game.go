@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	FPS = 3
+	fps             = 2
+	backgroundColor = tcell.ColorLightBlue
 )
 
 func Start(screen tcell.Screen) {
@@ -58,7 +59,7 @@ func loop(screen tcell.Screen) {
 	ball := Ball{
 		sprite: Sprite{
 			position:  Vector{(ballCanvas.width / 2) + CanvasPadding, (ballCanvas.height / 2) + CanvasPadding},
-			direction: Vector{x: 2, y: 2,},
+			direction: Vector{x: 1, y: 1,},
 		},
 	}
 	for {
@@ -66,7 +67,7 @@ func loop(screen tcell.Screen) {
 		ballCanvas.draw(screen)
 		ball.move(screen)
 		screen.Show()
-		duration := (100 / FPS) * time.Millisecond
+		duration := (100 / fps) * time.Millisecond
 		time.Sleep(duration)
 	}
 }
