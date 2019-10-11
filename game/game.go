@@ -8,37 +8,7 @@ import (
 
 const (
 	FPS           = 3
-	CanvasPadding = 4
 )
-
-type Vector struct {
-	x, y int
-}
-
-type Sprite struct {
-	position  Vector
-	direction Vector
-}
-
-type Ball struct {
-	sprite Sprite
-	speed  int
-}
-
-type Canvas struct {
-	x      int
-	y      int
-	width  int
-	height int
-}
-
-func (c *Canvas) draw(screen tcell.Screen) {
-	for col := c.x; col < c.width; col++ {
-		for row := c.y; row < c.height; row++ {
-			screen.SetContent(col, row, ' ', nil, tcell.StyleDefault.Background(tcell.ColorRebeccaPurple))
-		}
-	}
-}
 
 func Start(screen tcell.Screen) {
 	screen.HideCursor()
@@ -47,17 +17,6 @@ func Start(screen tcell.Screen) {
 		Foreground(tcell.ColorOrange))
 	screen.Clear()
 	loop(screen)
-}
-
-func (ball *Ball) getNextPos() Vector {
-	newX := ball.sprite.position.x + ball.sprite.direction.x*ball.speed
-	newY := ball.sprite.position.y + ball.sprite.direction.y*ball.speed
-	return Vector{newX, newY}
-}
-
-func (ball *Ball) move(screen tcell.Screen) {
-	ball.sprite.position = ball.getNextPos()
-	screen.SetContent(ball.sprite.position.x, ball.sprite.position.y, '●', nil, tcell.StyleDefault.Background(tcell.ColorRebeccaPurple).Foreground(tcell.ColorOrangeRed))
 }
 
 // FIXME border detection is worse than before
