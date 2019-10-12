@@ -26,5 +26,6 @@ func initScreen() tcell.Screen {
 
 func main() {
 	screen := initScreen()
-	game.Start(screen)
+	g := game.NewGame(screen)
+	g.EventLoop()
 }
