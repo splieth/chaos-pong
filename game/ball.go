@@ -16,7 +16,10 @@ func (ball *Ball) getNextPos() Vector {
 	return Vector{newX, newY}
 }
 
-func (ball *Ball) move(screen tcell.Screen) {
+func (ball *Ball) move() {
 	ball.sprite.position = ball.getNextPos()
+}
+
+func (ball *Ball) draw(screen tcell.Screen) {
 	screen.SetContent(ball.sprite.position.x, ball.sprite.position.y, '●', nil, tcell.StyleDefault.Background(backgroundColor).Foreground(ballColor))
 }
