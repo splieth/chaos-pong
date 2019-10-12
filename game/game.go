@@ -8,6 +8,7 @@ import (
 
 const (
 	fps             = 2
+	tick            = (100 / fps) * time.Millisecond
 	backgroundColor = tcell.ColorLightBlue
 )
 
@@ -62,12 +63,12 @@ func loop(screen tcell.Screen) {
 			direction: Vector{x: 1, y: 1,},
 		},
 	}
-	for {
+
+	t := time.NewTicker(tick)
+	for range t.C {
 		ball.handleCollision(&ballCanvas)
 		ballCanvas.draw(screen)
 		ball.move(screen)
 		screen.Show()
-		duration := (100 / fps) * time.Millisecond
-		time.Sleep(duration)
 	}
 }
