@@ -78,7 +78,7 @@ func (g *Game) EventLoop() {
 }
 
 func (g *Game) tick() {
-	g.ball.HandleCollision(g.ballCanvas)
+	g.ball.HandleCollision(g)
 	g.move()
 	g.draw()
 }
