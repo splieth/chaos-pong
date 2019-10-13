@@ -106,29 +106,29 @@ func (g *Game) pollScreenEvents() {
 	}
 }
 
+func (g *Game) handlePaddleMove(paddle *Paddle, direction Vector) {
+	newPaddleTop := Add(paddle.position, direction).y
+	newPaddleBottom := newPaddleTop + paddle.height
+	if newPaddleTop >= g.ballCanvas.y && newPaddleBottom <= g.ballCanvas.y+g.ballCanvas.height {
+		paddle.Move(direction)
+	}
+}
+
 func (g *Game) handleKey(ev *tcell.EventKey) {
 	switch ev.Rune() {
 	case 'W', 'w':
-		if Add(g.leftPaddle.position, Up()).y >= g.ballCanvas.y {
-			g.leftPaddle.Move(Up())
-		}
+		g.handlePaddleMove(g.leftPaddle, Up())
 	case 'S', 's':
-		if Add(g.leftPaddle.position, Down()).y+g.leftPaddle.height <= g.ballCanvas.y+g.ballCanvas.height {
-			g.leftPaddle.Move(Down())
-		}
+		g.handlePaddleMove(g.leftPaddle, Down())
 
 	}
 	switch ev.Key() {
 	case tcell.KeyCtrlC:
 		g.stop()
 	case tcell.KeyUp:
-		if Add(g.rightPaddle.position, Up()).y >= g.ballCanvas.y {
-			g.rightPaddle.Move(Up())
-		}
+		g.handlePaddleMove(g.rightPaddle, Up())
 	case tcell.KeyDown:
-		if Add(g.rightPaddle.position, Down()).y+g.rightPaddle.height <= g.ballCanvas.y+g.ballCanvas.height {
-			g.rightPaddle.Move(Down())
-		}
+		g.handlePaddleMove(g.rightPaddle, Down())
 	}
 }
 
