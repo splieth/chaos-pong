@@ -13,7 +13,7 @@ const (
 
 type Game struct {
 	ticker      *time.Ticker
-	done        chan bool
+	done        chan interface{}
 	screen      tcell.Screen
 	ballCanvas  *Canvas
 	ball        *Ball
@@ -53,7 +53,7 @@ func NewGame(screen tcell.Screen) *Game {
 
 	return &Game{
 		ticker:      time.NewTicker((100 / fps) * time.Millisecond),
-		done:        make(chan bool),
+		done:        make(chan interface{}),
 		screen:      screen,
 		ballCanvas:  &ballCanvas,
 		ball:        &ball,
@@ -135,5 +135,5 @@ func (g *Game) handleKey(ev *tcell.EventKey) {
 func (g *Game) stop() {
 	g.screen.Fini()
 	g.ticker.Stop()
-	g.done <- true
+	close(g.done)
 }
