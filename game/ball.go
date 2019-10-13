@@ -2,24 +2,27 @@ package game
 
 import "github.com/gdamore/tcell"
 
-const (
-	ballColor = tcell.ColorOrangeRed
-)
-
 type Ball struct {
-	sprite Sprite
+	position  Vector
+	direction Vector
+	color     tcell.Color
 }
 
-func (ball *Ball) getNextPos() Vector {
-	newX := ball.sprite.position.x + ball.sprite.direction.x
-	newY := ball.sprite.position.y + ball.sprite.direction.y
-	return Vector{newX, newY}
+func (ball *Ball) Move() {
+	ball.position = Add(ball.position, ball.direction)
 }
 
-func (ball *Ball) move() {
-	ball.sprite.position = ball.getNextPos()
+func (ball *Ball) Draw(screen tcell.Screen) {
+	screen.SetContent(ball.position.x, ball.position.y, '●', nil, tcell.StyleDefault.Background(canvasBackground).Foreground(ball.color))
 }
 
-func (ball *Ball) draw(screen tcell.Screen) {
-	screen.SetContent(ball.sprite.position.x, ball.sprite.position.y, '●', nil, tcell.StyleDefault.Background(backgroundColor).Foreground(ballColor))
+func (ball *Ball) HandleCollision(c *Canvas) {
+	newPos := Add(ball.position, ball.direction)
+
+	if newPos.x >= c.x+c.width || newPos.x < c.x {
+		ball.direction.x = ball.direction.x * -1
+	}
+	if newPos.y < c.y || newPos.y >= c.y+c.height {
+		ball.direction.y = ball.direction.y * -1
+	}
 }
