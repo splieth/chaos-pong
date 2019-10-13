@@ -9,11 +9,12 @@ const (
 	fps              = 2
 	canvasBackground = tcell.ColorLightBlue
 	canvasPadding    = 10
+	paddleHeight     = 5
 )
 
 type Game struct {
 	ticker      *time.Ticker
-	done        chan bool
+	done        chan interface{}
 	screen      tcell.Screen
 	ballCanvas  *Canvas
 	ball        *Ball
@@ -35,13 +36,13 @@ func NewGame(screen tcell.Screen) *Game {
 		color:     tcell.ColorOrangeRed,
 	}
 	leftPaddle := Paddle{
-		position: Vector{canvasPadding * 2, canvasPadding},
-		height:   5,
+		position: Vector{canvasPadding*2 + 2, (termHeight - paddleHeight) / 2},
+		height:   paddleHeight,
 		color:    tcell.ColorDarkBlue,
 	}
 	rightPaddle := Paddle{
-		position: Vector{termWidth - 2*canvasPadding - 1, canvasPadding},
-		height:   5,
+		position: Vector{termWidth - 2*canvasPadding - 3, (termHeight - paddleHeight) / 2},
+		height:   paddleHeight,
 		color:    tcell.ColorDarkGreen,
 	}
 
@@ -53,7 +54,7 @@ func NewGame(screen tcell.Screen) *Game {
 
 	return &Game{
 		ticker:      time.NewTicker((100 / fps) * time.Millisecond),
-		done:        make(chan bool),
+		done:        make(chan interface{}),
 		screen:      screen,
 		ballCanvas:  &ballCanvas,
 		ball:        &ball,
@@ -135,5 +136,5 @@ func (g *Game) handleKey(ev *tcell.EventKey) {
 func (g *Game) stop() {
 	g.screen.Fini()
 	g.ticker.Stop()
-	g.done <- true
+	close(g.done)
 }
