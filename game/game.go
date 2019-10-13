@@ -9,6 +9,7 @@ const (
 	fps              = 2
 	canvasBackground = tcell.ColorLightBlue
 	canvasPadding    = 10
+	paddleHeight     = 5
 )
 
 type Game struct {
@@ -35,13 +36,13 @@ func NewGame(screen tcell.Screen) *Game {
 		color:     tcell.ColorOrangeRed,
 	}
 	leftPaddle := Paddle{
-		position: Vector{canvasPadding * 2, canvasPadding},
-		height:   5,
+		position: Vector{canvasPadding*2 + 2, (termHeight - paddleHeight) / 2},
+		height:   paddleHeight,
 		color:    tcell.ColorDarkBlue,
 	}
 	rightPaddle := Paddle{
-		position: Vector{termWidth - 2*canvasPadding - 1, canvasPadding},
-		height:   5,
+		position: Vector{termWidth - 2*canvasPadding - 3, (termHeight - paddleHeight) / 2},
+		height:   paddleHeight,
 		color:    tcell.ColorDarkGreen,
 	}
 
