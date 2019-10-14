@@ -65,8 +65,12 @@ func (ball *Ball) HandleCollision(g *Game) {
 		switch coll {
 		case TopWall, BottomWall:
 			ball.direction.y = ball.direction.y * -1
-		case RightPaddle, LeftPaddle:
+		case RightPaddle:
 			ball.direction.x = ball.direction.x * -1
+			ball.direction.y = g.rightPaddle.lastDirection.y
+		case LeftPaddle:
+			ball.direction.x = ball.direction.x * -1
+			ball.direction.y = g.leftPaddle.lastDirection.y
 		case RightWall:
 			g.scores[0] += 1
 			g.goooooooal()
