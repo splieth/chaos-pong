@@ -28,10 +28,6 @@ type Game struct {
 	scores      []int
 }
 
-func (g *Game) Scores() []int {
-	return g.scores
-}
-
 func NewGame(screen tcell.Screen) *Game {
 	termWidth, termHeight := screen.Size()
 	ballCanvas := NewCanvas(2*canvasPadding, canvasPadding, termWidth-4*canvasPadding, termHeight-2*canvasPadding, ballCanvasBG)
