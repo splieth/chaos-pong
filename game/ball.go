@@ -68,16 +68,16 @@ func (ball *Ball) HandleCollision(g *Game) {
 		case RightPaddle, LeftPaddle:
 			ball.direction.x = ball.direction.x * -1
 		case RightWall:
-			g.scores[0] += 1;
+			g.scores[0] += 1
 			g.goooooooal()
 		case LeftWall:
-			g.scores[1] += 1;
+			g.scores[1] += 1
 			g.goooooooal()
 		}
 	}
 }
 
-func (b * Ball) center(g *Game) {
+func (b *Ball) center(g *Game) {
 	b.position.x = (g.ballCanvas.width / 2) + canvasPadding
 	b.position.y = (g.ballCanvas.height / 2) + canvasPadding
 }

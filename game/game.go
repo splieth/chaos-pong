@@ -1,7 +1,9 @@
 package game
 
 import (
+	"fmt"
 	"github.com/gdamore/tcell"
+	"strings"
 	"time"
 )
 
@@ -106,7 +108,15 @@ func (g *Game) draw() {
 	g.ball.Draw(g.screen)
 	g.leftPaddle.Draw(g.screen)
 	g.rightPaddle.Draw(g.screen)
+	g.updateScores()
 	g.screen.Show()
+}
+
+func (g *Game) updateScores() {
+	text := strings.Trim(strings.Replace(fmt.Sprint(g.scores), " ", ":", -1), "[]")
+	for i, r := range text {
+		g.screen.SetContent(g.scoreCanvas.x+i, g.scoreCanvas.y, r, nil, tcell.StyleDefault.Foreground(tcell.ColorWhite))
+	}
 }
 
 func (g *Game) pollScreenEvents() {
