@@ -10,7 +10,7 @@ import (
 const (
 	fps           = 2
 	ballCanvasBG  = tcell.ColorLightBlue
-	scoreCanvasBG = tcell.ColorOrchid
+	scoreCanvasBG = tcell.ColorBlack
 	canvasPadding = 10
 	paddleHeight  = 5
 	goalSleepTime = 500 * time.Millisecond
@@ -35,7 +35,7 @@ func (g *Game) Scores() []int {
 func NewGame(screen tcell.Screen) *Game {
 	termWidth, termHeight := screen.Size()
 	ballCanvas := NewCanvas(2*canvasPadding, canvasPadding, termWidth-4*canvasPadding, termHeight-2*canvasPadding, ballCanvasBG)
-	scoreCanvas := NewCanvas(2*canvasPadding, termHeight-canvasPadding, termWidth-4*canvasPadding, 4, scoreCanvasBG)
+	scoreCanvas := NewCanvas(2*canvasPadding, termHeight-canvasPadding, termWidth-4*canvasPadding, 1, scoreCanvasBG)
 	ball := Ball{
 		position:  Vector{(ballCanvas.width / 2) + canvasPadding, (ballCanvas.height / 2) + canvasPadding},
 		direction: Vector{1, 1},
@@ -113,9 +113,10 @@ func (g *Game) draw() {
 }
 
 func (g *Game) updateScores() {
-	text := strings.Trim(strings.Replace(fmt.Sprint(g.scores), " ", ":", -1), "[]")
-	for i, r := range text {
-		g.screen.SetContent(g.scoreCanvas.x+i, g.scoreCanvas.y, r, nil, tcell.StyleDefault.Foreground(tcell.ColorWhite))
+	scoreString := strings.Trim(strings.Replace(fmt.Sprint(g.scores), " ", ":", -1), "[]")
+	textAnchor := (g.scoreCanvas.width / 2) + canvasPadding + len(scoreString)
+	for i, r := range scoreString {
+		g.screen.SetContent(textAnchor+i, g.scoreCanvas.y, r, nil, tcell.StyleDefault.Foreground(tcell.ColorWhite))
 	}
 }
 
