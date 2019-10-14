@@ -92,6 +92,8 @@ func (g *Game) tick() {
 
 func (g *Game) goooooooal() {
 	g.ball.center(g)
+	g.ball.direction.x = g.ball.direction.x * -1
+	g.ball.direction.y = g.ball.direction.y * -1
 	time.Sleep(goalSleepTime)
 }
 
