@@ -6,11 +6,12 @@ import (
 )
 
 const (
-	fps              = 2
-	canvasBackground = tcell.ColorLightBlue
-	canvasPadding    = 10
-	paddleHeight     = 5
-	goalSleepTime    = 500 * time.Millisecond
+	fps           = 2
+	ballCanvasBG  = tcell.ColorLightBlue
+	scoreCanvasBG = tcell.ColorOrchid
+	canvasPadding = 10
+	paddleHeight  = 5
+	goalSleepTime = 500 * time.Millisecond
 )
 
 type Game struct {
@@ -18,6 +19,7 @@ type Game struct {
 	done        chan interface{}
 	screen      tcell.Screen
 	ballCanvas  *Canvas
+	scoreCanvas *Canvas
 	ball        *Ball
 	leftPaddle  *Paddle
 	rightPaddle *Paddle
@@ -30,12 +32,8 @@ func (g *Game) Scores() []int {
 
 func NewGame(screen tcell.Screen) *Game {
 	termWidth, termHeight := screen.Size()
-	ballCanvas := Canvas{
-		x:      2 * canvasPadding,
-		y:      canvasPadding,
-		width:  termWidth - 4*canvasPadding,
-		height: termHeight - 2*canvasPadding,
-	}
+	ballCanvas := NewCanvas(2*canvasPadding, canvasPadding, termWidth-4*canvasPadding, termHeight-2*canvasPadding, ballCanvasBG)
+	scoreCanvas := NewCanvas(2*canvasPadding, termHeight-canvasPadding, termWidth-4*canvasPadding, 4, scoreCanvasBG)
 	ball := Ball{
 		position:  Vector{(ballCanvas.width / 2) + canvasPadding, (ballCanvas.height / 2) + canvasPadding},
 		direction: Vector{1, 1},
@@ -63,6 +61,7 @@ func NewGame(screen tcell.Screen) *Game {
 		done:        make(chan interface{}),
 		screen:      screen,
 		ballCanvas:  &ballCanvas,
+		scoreCanvas: &scoreCanvas,
 		ball:        &ball,
 		leftPaddle:  &leftPaddle,
 		rightPaddle: &rightPaddle,
@@ -103,6 +102,7 @@ func (g *Game) move() {
 
 func (g *Game) draw() {
 	g.ballCanvas.Draw(g.screen)
+	g.scoreCanvas.Draw(g.screen)
 	g.ball.Draw(g.screen)
 	g.leftPaddle.Draw(g.screen)
 	g.rightPaddle.Draw(g.screen)

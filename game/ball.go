@@ -27,7 +27,7 @@ func (ball *Ball) Move() {
 
 func (ball *Ball) Draw(screen tcell.Screen) {
 	screen.SetContent(ball.position.x, ball.position.y, '●', nil,
-		tcell.StyleDefault.Background(canvasBackground).Foreground(ball.color))
+		tcell.StyleDefault.Background(ballCanvasBG).Foreground(ball.color))
 }
 
 func (ball *Ball) detectCollisions(g *Game) []Collision {
