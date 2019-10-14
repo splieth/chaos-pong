@@ -10,6 +10,7 @@ const (
 	canvasBackground = tcell.ColorLightBlue
 	canvasPadding    = 10
 	paddleHeight     = 5
+	goalSleepTime    = 500 * time.Millisecond
 )
 
 type Game struct {
@@ -20,6 +21,11 @@ type Game struct {
 	ball        *Ball
 	leftPaddle  *Paddle
 	rightPaddle *Paddle
+	scores      []int
+}
+
+func (g *Game) Scores() []int {
+	return g.scores
 }
 
 func NewGame(screen tcell.Screen) *Game {
@@ -60,6 +66,7 @@ func NewGame(screen tcell.Screen) *Game {
 		ball:        &ball,
 		leftPaddle:  &leftPaddle,
 		rightPaddle: &rightPaddle,
+		scores:      []int{0, 0},
 	}
 }
 
@@ -81,6 +88,11 @@ func (g *Game) tick() {
 	g.ball.HandleCollision(g)
 	g.move()
 	g.draw()
+}
+
+func (g *Game) goooooooal() {
+	g.ball.center(g)
+	time.Sleep(goalSleepTime)
 }
 
 func (g *Game) move() {

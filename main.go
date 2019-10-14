@@ -28,4 +28,5 @@ func main() {
 	screen := initScreen()
 	g := game.NewGame(screen)
 	g.EventLoop()
+	fmt.Println("scores: ", g.Scores())
 }

@@ -1,6 +1,8 @@
 package game
 
-import "github.com/gdamore/tcell"
+import (
+	"github.com/gdamore/tcell"
+)
 
 type Ball struct {
 	position  Vector
@@ -63,8 +65,19 @@ func (ball *Ball) HandleCollision(g *Game) {
 		switch coll {
 		case TopWall, BottomWall:
 			ball.direction.y = ball.direction.y * -1
-		case RightWall, LeftWall, RightPaddle, LeftPaddle:
+		case RightPaddle, LeftPaddle:
 			ball.direction.x = ball.direction.x * -1
+		case RightWall:
+			g.scores[0] += 1;
+			g.goooooooal()
+		case LeftWall:
+			g.scores[1] += 1;
+			g.goooooooal()
 		}
 	}
+}
+
+func (b * Ball) center(g *Game) {
+	b.position.x = (g.ballCanvas.width / 2) + canvasPadding
+	b.position.y = (g.ballCanvas.height / 2) + canvasPadding
 }
