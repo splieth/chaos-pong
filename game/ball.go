@@ -21,6 +21,14 @@ const (
 	RightPaddle
 )
 
+func NewBall(pos, dir Vector, color tcell.Color) Ball {
+	return Ball{
+		position:  pos,
+		direction: dir,
+		color:     color,
+	}
+}
+
 func (ball *Ball) Move() {
 	ball.position = Add(ball.position, ball.direction)
 }

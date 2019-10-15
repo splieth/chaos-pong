@@ -32,21 +32,11 @@ func NewGame(screen tcell.Screen) *Game {
 	termWidth, termHeight := screen.Size()
 	ballCanvas := NewCanvas(2*canvasPadding, canvasPadding, termWidth-4*canvasPadding, termHeight-2*canvasPadding, ballCanvasBG)
 	scoreCanvas := NewCanvas(2*canvasPadding, termHeight-canvasPadding, termWidth-4*canvasPadding, 1, scoreCanvasBG)
-	ball := Ball{
-		position:  Vector{(ballCanvas.width / 2) + canvasPadding, (ballCanvas.height / 2) + canvasPadding},
-		direction: Vector{1, 1},
-		color:     tcell.ColorOrangeRed,
-	}
-	leftPaddle := Paddle{
-		position: Vector{canvasPadding*2 + 2, (termHeight - paddleHeight) / 2},
-		height:   paddleHeight,
-		color:    tcell.ColorDarkBlue,
-	}
-	rightPaddle := Paddle{
-		position: Vector{termWidth - 2*canvasPadding - 3, (termHeight - paddleHeight) / 2},
-		height:   paddleHeight,
-		color:    tcell.ColorDarkGreen,
-	}
+	ball := NewBall(Vector{(ballCanvas.width / 2) + canvasPadding, (ballCanvas.height / 2) + canvasPadding},
+		Vector{1, 1},
+		tcell.ColorOrangeRed)
+	leftPaddle := NewPaddle(Vector{canvasPadding*2 + 2, (termHeight - paddleHeight) / 2}, paddleHeight, tcell.ColorDarkBlue)
+	rightPaddle := NewPaddle(Vector{termWidth - 2*canvasPadding - 3, (termHeight - paddleHeight) / 2}, paddleHeight, tcell.ColorDarkGreen)
 
 	screen.HideCursor()
 	screen.SetStyle(tcell.StyleDefault.
