@@ -72,9 +72,15 @@ func (g *Game) EventLoop() {
 }
 
 func (g *Game) tick() {
-	g.ball.HandleCollision(g)
+	g.HandleCollision()
 	g.move()
 	g.draw()
+}
+
+func (g *Game) stop() {
+	g.screen.Fini()
+	g.ticker.Stop()
+	close(g.done)
 }
 
 func (g *Game) goooooooal() {
@@ -144,8 +150,53 @@ func (g *Game) handleKey(ev *tcell.EventKey) {
 	}
 }
 
-func (g *Game) stop() {
-	g.screen.Fini()
-	g.ticker.Stop()
-	close(g.done)
+func (g *Game) detectCollisions() []Collision {
+	canvas := g.ballCanvas
+	newPos := Add(g.ball.position, g.ball.direction)
+	var collisions []Collision
+	if newPos.x == g.leftPaddle.position.x &&
+		newPos.y >= g.leftPaddle.position.y &&
+		newPos.y <= g.leftPaddle.position.y+g.leftPaddle.height {
+		collisions = append(collisions, LeftPaddle)
+	}
+	if newPos.x == g.rightPaddle.position.x &&
+		newPos.y >= g.rightPaddle.position.y &&
+		newPos.y <= g.rightPaddle.position.y+g.rightPaddle.height {
+		collisions = append(collisions, RightPaddle)
+	}
+	if newPos.x < canvas.x {
+		collisions = append(collisions, LeftWall)
+	}
+	if newPos.x >= canvas.x+canvas.width {
+		collisions = append(collisions, RightWall)
+	}
+	if newPos.y < canvas.y {
+		collisions = append(collisions, TopWall)
+	}
+	if newPos.y >= canvas.y+canvas.height {
+		collisions = append(collisions, BottomWall)
+	}
+	return collisions
+}
+
+func (g *Game) HandleCollision() {
+	collisions := g.detectCollisions()
+	for _, coll := range collisions {
+		switch coll {
+		case TopWall, BottomWall:
+			g.ball.direction.y = g.ball.direction.y * -1
+		case RightPaddle:
+			g.ball.direction.x = g.ball.direction.x * -1
+			g.ball.direction.y = g.rightPaddle.lastDirection.y
+		case LeftPaddle:
+			g.ball.direction.x = g.ball.direction.x * -1
+			g.ball.direction.y = g.leftPaddle.lastDirection.y
+		case RightWall:
+			g.scores[0] += 1
+			g.goooooooal()
+		case LeftWall:
+			g.scores[1] += 1
+			g.goooooooal()
+		}
+	}
 }

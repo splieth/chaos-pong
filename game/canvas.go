@@ -10,6 +10,17 @@ type Canvas struct {
 	backgroundColor tcell.Color
 }
 
+type Collision int8
+
+const (
+	TopWall Collision = iota
+	RightWall
+	BottomWall
+	LeftWall
+	LeftPaddle
+	RightPaddle
+)
+
 func NewCanvas(x, y, width, height int, backgroundColor tcell.Color) Canvas {
 	return Canvas{
 		x:               x,
