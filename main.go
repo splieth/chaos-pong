@@ -15,8 +15,7 @@ func initScreen() tcell.Screen {
 		log.Printf("Cannot alloc screen, tcell.NewScreen() gave an error:\n%s", err)
 		os.Exit(1)
 	}
-	err = screen.Init()
-	if err != nil {
+	if err = screen.Init(); err != nil {
 		fmt.Println("Could not start tcell for chaos-pong.")
 		log.Printf("Cannot start gomatrix, screen.Init() gave an error:\n%s", err)
 		os.Exit(1)
