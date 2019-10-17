@@ -3,6 +3,7 @@ package game
 import (
 	"fmt"
 	"github.com/gdamore/tcell"
+	"math/rand"
 	"strings"
 	"time"
 )
@@ -182,6 +183,24 @@ func (g *Game) detectCollisions() []Collision {
 	return collisions
 }
 
+func (g *Game) HandlePaddleColission(coll Collision) {
+	var paddle Paddle
+	var randomAddition float64
+	if coll == LeftPaddle {
+		paddle = *g.leftPaddle
+	} else {
+		paddle = *g.rightPaddle
+	}
+	lastPaddleDir := paddle.lastDirection.y
+	if lastPaddleDir > 0 {
+		randomAddition = -float64(rand.Intn(1000)) / 1000
+	} else {
+		randomAddition = float64(rand.Intn(1000)) / 1000
+	}
+	g.ball.direction.x = g.ball.direction.x * -1
+	g.ball.direction.y = float64(lastPaddleDir) + randomAddition
+}
+
 func (g *Game) HandleBallCollision() {
 	collisions := g.detectCollisions()
 	for _, coll := range collisions {
@@ -189,11 +208,9 @@ func (g *Game) HandleBallCollision() {
 		case TopWall, BottomWall:
 			g.ball.direction.y = g.ball.direction.y * -1
 		case RightPaddle:
-			g.ball.direction.x = g.ball.direction.x * -1
-			g.ball.direction.y = g.rightPaddle.lastDirection.convertToFloat().y
+			g.HandlePaddleColission(coll)
 		case LeftPaddle:
-			g.ball.direction.x = g.ball.direction.x * -1
-			g.ball.direction.y = g.leftPaddle.lastDirection.convertToFloat().y
+			g.HandlePaddleColission(coll)
 		case RightWall:
 			g.scoreGoal(RightWall)
 		case LeftWall:
