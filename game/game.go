@@ -3,7 +3,6 @@ package game
 import (
 	"fmt"
 	"github.com/gdamore/tcell"
-	"math/rand"
 	"strings"
 	"time"
 )
@@ -154,70 +153,6 @@ func (g *Game) handleKey(ev *tcell.EventKey) {
 		g.handlePaddleMove(g.rightPaddle, Up())
 	case tcell.KeyDown:
 		g.handlePaddleMove(g.rightPaddle, Down())
-	}
-}
-
-func (g *Game) detectCollisions() []Collision {
-	canvas := g.ballCanvas
-	newPos := g.ball.GetNextPos()
-	var collisions []Collision
-	if newPos.x == g.leftPaddle.position.x &&
-		newPos.y >= g.leftPaddle.position.y &&
-		newPos.y <= g.leftPaddle.position.y+g.leftPaddle.height {
-		collisions = append(collisions, LeftPaddle)
-	}
-	if newPos.x == g.rightPaddle.position.x &&
-		newPos.y >= g.rightPaddle.position.y &&
-		newPos.y <= g.rightPaddle.position.y+g.rightPaddle.height {
-		collisions = append(collisions, RightPaddle)
-	}
-	if newPos.x < canvas.x {
-		collisions = append(collisions, LeftWall)
-	}
-	if newPos.x >= canvas.x+canvas.width {
-		collisions = append(collisions, RightWall)
-	}
-	if newPos.y < canvas.y {
-		collisions = append(collisions, TopWall)
-	}
-	if newPos.y >= canvas.y+canvas.height {
-		collisions = append(collisions, BottomWall)
-	}
-	return collisions
-}
-
-func (g *Game) HandlePaddleColission(coll Collision) {
-	var paddle Paddle
-	var randomAddition float64
-	if coll == LeftPaddle {
-		paddle = *g.leftPaddle
-	} else {
-		paddle = *g.rightPaddle
-	}
-	lastPaddleDir := paddle.lastDirection.y
-	if lastPaddleDir > 0 {
-		randomAddition = -float64(rand.Intn(1000)) / 1000
-	} else {
-		randomAddition = float64(rand.Intn(1000)) / 1000
-	}
-	g.ball.direction.x = g.ball.direction.x * -1
-	g.ball.direction.y = float64(lastPaddleDir) + randomAddition
-}
-
-func (g *Game) HandleBallCollision() {
-	collisions := g.detectCollisions()
-	for _, coll := range collisions {
-		switch coll {
-		case TopWall, BottomWall:
-			g.ball.direction.y = g.ball.direction.y * -1
-		case RightPaddle, LeftPaddle:
-			g.HandlePaddleColission(coll)
-			g.increaseBallSpeed()
-		case RightWall:
-			g.scoreGoal(RightWall)
-		case LeftWall:
-			g.scoreGoal(LeftWall)
-		}
 	}
 }
 
