@@ -32,9 +32,7 @@ func NewGame(screen tcell.Screen) *Game {
 	termWidth, termHeight := screen.Size()
 	ballCanvas := NewCanvas(2*canvasPadding, canvasPadding, termWidth-4*canvasPadding, termHeight-2*canvasPadding, ballCanvasBG)
 	scoreCanvas := NewCanvas(2*canvasPadding, termHeight-canvasPadding, termWidth-4*canvasPadding, 1, scoreCanvasBG)
-	ball := NewBall(Vector{(ballCanvas.width / 2) + canvasPadding, (ballCanvas.height / 2) + canvasPadding},
-		Vector{1, 1},
-		tcell.ColorOrangeRed)
+	ball := NewBall(ballCanvas.GetCenter(), Vector{1, 1}, tcell.ColorOrangeRed)
 	leftPaddle := NewPaddle(Vector{canvasPadding*2 + 2, (termHeight - paddleHeight) / 2}, paddleHeight, tcell.ColorDarkBlue)
 	rightPaddle := NewPaddle(Vector{termWidth - 2*canvasPadding - 3, (termHeight - paddleHeight) / 2}, paddleHeight, tcell.ColorDarkGreen)
 
@@ -72,7 +70,7 @@ func (g *Game) EventLoop() {
 }
 
 func (g *Game) tick() {
-	g.HandleCollision()
+	g.HandleBallCollision()
 	g.move()
 	g.draw()
 }
@@ -83,8 +81,13 @@ func (g *Game) stop() {
 	close(g.done)
 }
 
-func (g *Game) goooooooal() {
-	g.ball.center(g)
+func (g *Game) scoreGoal(collision Collision) {
+	if collision == RightWall {
+		g.scores[0]++
+	} else {
+		g.scores[1]++
+	}
+	g.ball.position = g.ballCanvas.GetCenter()
 	g.ball.direction.x = g.ball.direction.x * -1
 	g.ball.direction.y = g.ball.direction.y * -1
 	time.Sleep(goalSleepTime)
@@ -179,7 +182,7 @@ func (g *Game) detectCollisions() []Collision {
 	return collisions
 }
 
-func (g *Game) HandleCollision() {
+func (g *Game) HandleBallCollision() {
 	collisions := g.detectCollisions()
 	for _, coll := range collisions {
 		switch coll {
@@ -192,11 +195,9 @@ func (g *Game) HandleCollision() {
 			g.ball.direction.x = g.ball.direction.x * -1
 			g.ball.direction.y = g.leftPaddle.lastDirection.y
 		case RightWall:
-			g.scores[0] += 1
-			g.goooooooal()
+			g.scoreGoal(RightWall)
 		case LeftWall:
-			g.scores[1] += 1
-			g.goooooooal()
+			g.scoreGoal(LeftWall)
 		}
 	}
 }
