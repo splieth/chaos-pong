@@ -90,6 +90,7 @@ func (g *Game) scoreGoal(collision Collision) {
 		g.scores[1]++
 	}
 	g.ball.position = g.ballCanvas.GetCenter()
+	g.resetBallSpeed()
 	g.ball.direction.x = g.ball.direction.x * -1
 	g.ball.direction.y = g.ball.direction.y * -1
 	time.Sleep(goalSleepTime)
@@ -213,4 +214,8 @@ func frameRate(fps int) *time.Ticker {
 func (g *Game) increaseBallSpeed() {
 	g.fps++
 	g.ticker = frameRate(g.fps)
+}
+func (g *Game) resetBallSpeed() {
+	g.fps = initialFps
+	g.ticker = frameRate(initialFps)
 }
