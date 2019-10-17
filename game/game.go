@@ -35,7 +35,7 @@ func NewGame(screen tcell.Screen) *Game {
 	log.Printf("Initializing term with width: %d and height: %d", termWidth, termHeight)
 	ballCanvas := NewCanvas(2*canvasPadding, canvasPadding, termWidth-4*canvasPadding, termHeight-2*canvasPadding, ballCanvasBG)
 	scoreCanvas := NewCanvas(2*canvasPadding, termHeight-canvasPadding, termWidth-4*canvasPadding, 1, scoreCanvasBG)
-	ball := NewBall(ballCanvas.GetCenter(), FloatVector{1, 1}, tcell.ColorOrangeRed)
+	ball := NewBall(ballCanvas.GetCenter().convertToFloat(), FloatVector{1, 1}, tcell.ColorOrangeRed)
 	leftPaddle := NewPaddle(IntVector{canvasPadding*2 + 2, (termHeight - paddleHeight) / 2}, paddleHeight, tcell.ColorDarkBlue)
 	rightPaddle := NewPaddle(IntVector{termWidth - 2*canvasPadding - 3, (termHeight - paddleHeight) / 2}, paddleHeight, tcell.ColorDarkGreen)
 
@@ -91,7 +91,7 @@ func (g *Game) scoreGoal(collision Collision) {
 	} else {
 		g.scores[1]++
 	}
-	g.ball.position = g.ballCanvas.GetCenter()
+	g.ball.position = g.ballCanvas.GetCenter().convertToFloat()
 	g.resetBallSpeed()
 	g.ball.direction.x = g.ball.direction.x * -1
 	g.ball.direction.y = g.ball.direction.y * -1
@@ -159,7 +159,7 @@ func (g *Game) handleKey(ev *tcell.EventKey) {
 }
 
 func frameRate(fps int) *time.Ticker {
-	return time.NewTicker(time.Duration((100 / fps)) * time.Millisecond)
+	return time.NewTicker(time.Duration(100/fps) * time.Millisecond)
 }
 
 func (g *Game) increaseBallSpeed() {

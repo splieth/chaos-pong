@@ -12,7 +12,7 @@ func init() {
 
 func (g *Game) detectCollisions() []Collision {
 	canvas := g.ballCanvas
-	newPos := g.ball.GetNextPos()
+	newPos := g.ball.GetNextPos().convertToInt()
 	var collisions []Collision
 	if newPos.x == g.leftPaddle.position.x &&
 		newPos.y >= g.leftPaddle.position.y &&
@@ -50,7 +50,10 @@ func (g *Game) HandlePaddleColission(coll Collision) {
 	lastPaddleDir := paddle.lastDirection.y
 	randomAddition = randomize(paddle.lastDirection)
 	g.ball.direction.x = g.ball.direction.x * -1
+	log.Println("Direction before random addition: %f", g.ball.direction.y)
+	log.Println("Last direction before random addition: %f", g.ball.direction.y)
 	g.ball.direction.y = float64(lastPaddleDir) + randomAddition
+	log.Println("New direction with random addition: %f", g.ball.direction.y)
 }
 
 func randomize(v IntVector) float64 {
