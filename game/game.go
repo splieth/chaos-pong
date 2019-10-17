@@ -3,6 +3,7 @@ package game
 import (
 	"fmt"
 	"github.com/gdamore/tcell"
+	"log"
 	"strings"
 	"time"
 )
@@ -31,6 +32,7 @@ type Game struct {
 
 func NewGame(screen tcell.Screen) *Game {
 	termWidth, termHeight := screen.Size()
+	log.Printf("Initializing term with width: %d and height: %d", termWidth, termHeight)
 	ballCanvas := NewCanvas(2*canvasPadding, canvasPadding, termWidth-4*canvasPadding, termHeight-2*canvasPadding, ballCanvasBG)
 	scoreCanvas := NewCanvas(2*canvasPadding, termHeight-canvasPadding, termWidth-4*canvasPadding, 1, scoreCanvasBG)
 	ball := NewBall(ballCanvas.GetCenter(), FloatVector{1, 1}, tcell.ColorOrangeRed)

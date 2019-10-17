@@ -1,6 +1,7 @@
 package game
 
 import (
+	"log"
 	"math/rand"
 	"time"
 )
@@ -59,6 +60,7 @@ func randomize(v IntVector) float64 {
 	} else {
 		randomAddition = float64(rand.Intn(1000)) / 1000
 	}
+	log.Printf("Got randomAddition: %f", randomAddition)
 	return randomAddition
 }
 
