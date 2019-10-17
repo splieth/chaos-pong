@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	fps           = 2
+	initialFps    = 2
 	ballCanvasBG  = tcell.ColorLightBlue
 	scoreCanvasBG = tcell.ColorBlack
 	canvasPadding = 10
@@ -26,6 +26,7 @@ type Game struct {
 	leftPaddle  *Paddle
 	rightPaddle *Paddle
 	scores      []int
+	fps         int
 }
 
 func NewGame(screen tcell.Screen) *Game {
@@ -43,7 +44,7 @@ func NewGame(screen tcell.Screen) *Game {
 	screen.Clear()
 
 	return &Game{
-		ticker:      time.NewTicker((100 / fps) * time.Millisecond),
+		ticker:      frameRate(initialFps),
 		done:        make(chan interface{}),
 		screen:      screen,
 		ballCanvas:  &ballCanvas,
@@ -58,6 +59,7 @@ func NewGame(screen tcell.Screen) *Game {
 func (g *Game) EventLoop() {
 	defer g.ticker.Stop()
 	go g.pollScreenEvents()
+	go g.increaseBallSpeed()
 
 	for {
 		select {
@@ -191,13 +193,24 @@ func (g *Game) HandleBallCollision() {
 		case RightPaddle:
 			g.ball.direction.x = g.ball.direction.x * -1
 			g.ball.direction.y = g.rightPaddle.lastDirection.convertToFloat().y
+			g.increaseBallSpeed()
 		case LeftPaddle:
 			g.ball.direction.x = g.ball.direction.x * -1
 			g.ball.direction.y = g.leftPaddle.lastDirection.convertToFloat().y
+			g.increaseBallSpeed()
 		case RightWall:
 			g.scoreGoal(RightWall)
 		case LeftWall:
 			g.scoreGoal(LeftWall)
 		}
 	}
+}
+
+func frameRate(fps int) *time.Ticker {
+	return time.NewTicker(time.Duration((100 / fps)) * time.Millisecond)
+}
+
+func (g *Game) increaseBallSpeed() {
+	g.fps++
+	g.ticker = frameRate(g.fps)
 }
