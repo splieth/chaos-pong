@@ -32,9 +32,9 @@ func NewGame(screen tcell.Screen) *Game {
 	termWidth, termHeight := screen.Size()
 	ballCanvas := NewCanvas(2*canvasPadding, canvasPadding, termWidth-4*canvasPadding, termHeight-2*canvasPadding, ballCanvasBG)
 	scoreCanvas := NewCanvas(2*canvasPadding, termHeight-canvasPadding, termWidth-4*canvasPadding, 1, scoreCanvasBG)
-	ball := NewBall(ballCanvas.GetCenter(), Vector{1, 1}, tcell.ColorOrangeRed)
-	leftPaddle := NewPaddle(Vector{canvasPadding*2 + 2, (termHeight - paddleHeight) / 2}, paddleHeight, tcell.ColorDarkBlue)
-	rightPaddle := NewPaddle(Vector{termWidth - 2*canvasPadding - 3, (termHeight - paddleHeight) / 2}, paddleHeight, tcell.ColorDarkGreen)
+	ball := NewBall(ballCanvas.GetCenter(), FloatVector{1, 1}, tcell.ColorOrangeRed)
+	leftPaddle := NewPaddle(IntVector{canvasPadding*2 + 2, (termHeight - paddleHeight) / 2}, paddleHeight, tcell.ColorDarkBlue)
+	rightPaddle := NewPaddle(IntVector{termWidth - 2*canvasPadding - 3, (termHeight - paddleHeight) / 2}, paddleHeight, tcell.ColorDarkGreen)
 
 	screen.HideCursor()
 	screen.SetStyle(tcell.StyleDefault.
@@ -127,8 +127,8 @@ func (g *Game) pollScreenEvents() {
 	}
 }
 
-func (g *Game) handlePaddleMove(paddle *Paddle, direction Vector) {
-	newPaddleTop := Add(paddle.position, direction).y
+func (g *Game) handlePaddleMove(paddle *Paddle, direction IntVector) {
+	newPaddleTop := paddle.position.Add(direction).y
 	newPaddleBottom := newPaddleTop + paddle.height
 	if newPaddleTop >= g.ballCanvas.y && newPaddleBottom <= g.ballCanvas.y+g.ballCanvas.height {
 		paddle.Move(direction)
@@ -155,7 +155,7 @@ func (g *Game) handleKey(ev *tcell.EventKey) {
 
 func (g *Game) detectCollisions() []Collision {
 	canvas := g.ballCanvas
-	newPos := Add(g.ball.position, g.ball.direction)
+	newPos := g.ball.GetNextPos()
 	var collisions []Collision
 	if newPos.x == g.leftPaddle.position.x &&
 		newPos.y >= g.leftPaddle.position.y &&
@@ -190,10 +190,10 @@ func (g *Game) HandleBallCollision() {
 			g.ball.direction.y = g.ball.direction.y * -1
 		case RightPaddle:
 			g.ball.direction.x = g.ball.direction.x * -1
-			g.ball.direction.y = g.rightPaddle.lastDirection.y
+			g.ball.direction.y = g.rightPaddle.lastDirection.convertToFloat().y
 		case LeftPaddle:
 			g.ball.direction.x = g.ball.direction.x * -1
-			g.ball.direction.y = g.leftPaddle.lastDirection.y
+			g.ball.direction.y = g.leftPaddle.lastDirection.convertToFloat().y
 		case RightWall:
 			g.scoreGoal(RightWall)
 		case LeftWall:

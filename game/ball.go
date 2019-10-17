@@ -5,12 +5,12 @@ import (
 )
 
 type Ball struct {
-	position  Vector
-	direction Vector
+	position  IntVector
+	direction FloatVector
 	color     tcell.Color
 }
 
-func NewBall(pos, dir Vector, color tcell.Color) Ball {
+func NewBall(pos IntVector, dir FloatVector, color tcell.Color) Ball {
 	return Ball{
 		position:  pos,
 		direction: dir,
@@ -18,11 +18,16 @@ func NewBall(pos, dir Vector, color tcell.Color) Ball {
 	}
 }
 
+func (ball *Ball) GetNextPos() IntVector {
+	return ball.position.convertToFloat().Add(ball.direction).convertToInt()
+}
+
 func (ball *Ball) Move() {
-	ball.position = Add(ball.position, ball.direction)
+	ball.position = ball.GetNextPos()
 }
 
 func (ball *Ball) Draw(screen tcell.Screen) {
-	screen.SetContent(ball.position.x, ball.position.y, '●', nil,
+	roundedBallPos := ball.position
+	screen.SetContent(roundedBallPos.x, roundedBallPos.y, '●', nil,
 		tcell.StyleDefault.Background(ballCanvasBG).Foreground(ball.color))
 }

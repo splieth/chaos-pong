@@ -39,6 +39,6 @@ func (c *Canvas) Draw(screen tcell.Screen) {
 	}
 }
 
-func (c *Canvas) GetCenter() Vector {
-	return Vector{(c.width / 2) + c.x, (c.height / 2) + c.y}
+func (c *Canvas) GetCenter() IntVector {
+	return IntVector{(c.width / 2) + c.x, (c.height / 2) + c.y}
 }

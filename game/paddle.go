@@ -3,16 +3,16 @@ package game
 import "github.com/gdamore/tcell"
 
 type Paddle struct {
-	position      Vector
-	lastDirection Vector
+	position      IntVector
+	lastDirection IntVector
 	color         tcell.Color
 	height        int
 }
 
-func NewPaddle(position Vector, height int, color tcell.Color) Paddle {
+func NewPaddle(position IntVector, height int, color tcell.Color) Paddle {
 	return Paddle{
 		position:      position,
-		lastDirection: Vector{0, 0},
+		lastDirection: IntVector{0, 0},
 		color:         color,
 		height:        height,
 	}
@@ -24,7 +24,7 @@ func (paddle *Paddle) Draw(screen tcell.Screen) {
 	}
 }
 
-func (paddle *Paddle) Move(offset Vector) {
+func (paddle *Paddle) Move(offset IntVector) {
 	paddle.lastDirection = offset
-	paddle.position = Add(paddle.position, offset)
+	paddle.position = paddle.position.Add(offset)
 }
