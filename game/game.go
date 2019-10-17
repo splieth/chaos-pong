@@ -70,7 +70,7 @@ func (g *Game) EventLoop() {
 }
 
 func (g *Game) tick() {
-	g.HandleCollision()
+	g.HandleBallCollision()
 	g.move()
 	g.draw()
 }
@@ -81,8 +81,13 @@ func (g *Game) stop() {
 	close(g.done)
 }
 
-func (g *Game) goooooooal() {
-	g.ball.center(g)
+func (g *Game) scoreGoal(collision Collision) {
+	if collision == RightWall {
+		g.scores[0]++
+	} else {
+		g.scores[1]++
+	}
+	g.ball.position = g.ballCanvas.GetCenter()
 	g.ball.direction.x = g.ball.direction.x * -1
 	g.ball.direction.y = g.ball.direction.y * -1
 	time.Sleep(goalSleepTime)
@@ -177,7 +182,7 @@ func (g *Game) detectCollisions() []Collision {
 	return collisions
 }
 
-func (g *Game) HandleCollision() {
+func (g *Game) HandleBallCollision() {
 	collisions := g.detectCollisions()
 	for _, coll := range collisions {
 		switch coll {
@@ -190,11 +195,9 @@ func (g *Game) HandleCollision() {
 			g.ball.direction.x = g.ball.direction.x * -1
 			g.ball.direction.y = g.leftPaddle.lastDirection.y
 		case RightWall:
-			g.scores[0] += 1
-			g.goooooooal()
+			g.scoreGoal(RightWall)
 		case LeftWall:
-			g.scores[1] += 1
-			g.goooooooal()
+			g.scoreGoal(LeftWall)
 		}
 	}
 }
