@@ -32,6 +32,11 @@ func (v FloatVector) Add(other FloatVector) FloatVector {
 	return FloatVector{v.x + other.x, v.y + other.y}
 }
 
+func (v FloatVector) Normalize() FloatVector {
+	norm := math.Sqrt(v.x*v.x + v.y*v.y)
+	return FloatVector{v.x / norm, v.y / norm}
+}
+
 func Up() IntVector {
 	return IntVector{0, -1}
 }

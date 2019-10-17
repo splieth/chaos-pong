@@ -19,7 +19,8 @@ func NewBall(pos IntVector, dir FloatVector, color tcell.Color) Ball {
 }
 
 func (ball *Ball) GetNextPos() IntVector {
-	return ball.position.convertToFloat().Add(ball.direction).convertToInt()
+	normalizedBallDir := ball.direction.Normalize()
+	return ball.position.convertToFloat().Add(normalizedBallDir).convertToInt()
 }
 
 func (ball *Ball) Move() {
