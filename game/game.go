@@ -2,6 +2,7 @@ package game
 
 import (
 	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/splieth/chaos-pong/game/types"
 	"log"
 )
@@ -15,13 +16,14 @@ type Game struct {
 }
 
 func NewGame() Game {
-	ballImage := createBallImage()
-
+	ballImage := LoadImage("resources/ball.png")
+	width, _ := ballImage.Size()
+	radius := width / 2
 	ball := types.NewBall(
 		types.Vector{X: 0, Y: 0},
 		types.Vector{X: 1, Y: 1},
 		ballImage,
-		BallRadius)
+		radius)
 	return Game{
 		ball: &ball,
 	}
@@ -32,10 +34,11 @@ func (game *Game) Draw(screen *ebiten.Image) error {
 	return nil
 }
 
-func createBallImage() *ebiten.Image {
-	image, err := ebiten.NewImage(2*BallRadius, 2*BallRadius, ebiten.FilterNearest)
+func LoadImage(path string) *ebiten.Image {
+	image, _, err := ebitenutil.NewImageFromFile(path, ebiten.FilterDefault)
 	if err != nil {
-		log.Panic(err)
+		log.Fatal(err)
 	}
 	return image
 }
+

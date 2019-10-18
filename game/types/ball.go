@@ -2,7 +2,6 @@ package types
 
 import (
 	"github.com/hajimehoshi/ebiten"
-	"image/color"
 )
 
 type Ball struct {
@@ -23,7 +22,6 @@ func NewBall(startPosition, direction Vector, image *ebiten.Image, radius int) B
 
 func (ball *Ball) Move(screen *ebiten.Image) {
 	imageOptions := ebiten.DrawImageOptions{}
-	_ = ball.image.Fill(color.White)
 
 	screenWidth, screenHeight := screen.Size()
 	if ball.pos.X < 0 {

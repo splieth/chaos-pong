@@ -1,6 +1,8 @@
 package types
 
-import "github.com/hajimehoshi/ebiten"
+import (
+	"github.com/hajimehoshi/ebiten"
+)
 
 type Object struct {
 	pos, vel Vector
