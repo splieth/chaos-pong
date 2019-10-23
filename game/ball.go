@@ -28,7 +28,7 @@ func newBall(canvas *types.Canvas) Ball {
 }
 
 func (ball *Ball) Move() {
-	ball.Pos = ball.Pos.Add(ball.Dir)
+	ball.Pos.Add(ball.Dir)
 }
 
 func (ball *Ball) Draw() {

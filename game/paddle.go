@@ -32,5 +32,5 @@ func (p *Paddle) Draw() {
 }
 
 func (p *Paddle) Move(offset types.Vector) {
-	p.Pos = p.Pos.Add(offset)
+	p.Pos.Add(offset)
 }
