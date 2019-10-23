@@ -22,7 +22,7 @@ type Game struct {
 }
 
 func NewGame(screen *ebiten.Image) Game {
-	canvas := types.NewCanvas(screen, canvasPadding, canvasPadding, canvasPadding)
+	canvas := types.NewCanvas(screen, types.Vector{X: canvasPadding, Y: canvasPadding}, canvasPadding)
 	canvasWidth, _ := canvas.Image.Size()
 
 	ball := newBall(&canvas)
