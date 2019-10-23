@@ -8,70 +8,33 @@ import (
 	"log"
 )
 
-const padding float64 = 10
+const (
+	canvasPadding = 50.0
+	paddleWidth   = 25
+	paddleHeight  = 150
+)
 
 type Game struct {
-	ball        *types.Ball
+	ball        *Ball
 	ballCanvas  *types.Canvas
-	leftPaddle  *types.Paddle
-	rightPaddle *types.Paddle
-}
-
-func getCenter(screen *ebiten.Image) (float64, float64) {
-	width, height := screen.Size()
-	return float64(width) / 2, float64(height) / 2
+	leftPaddle  *Paddle
+	rightPaddle *Paddle
 }
 
 func NewGame(screen *ebiten.Image) Game {
-	ballImage := LoadImage("resources/ball.png")
-	ballWidth, _ := ballImage.Size()
-	w, h := screen.Size()
-	width := float64(w) - 2*padding
-	height := float64(h) - 2*padding
+	canvas := types.NewCanvas(screen, canvasPadding, canvasPadding, canvasPadding)
+	canvasWidth, _ := canvas.Image.Size()
 
-	radius := ballWidth / 2
-	image, _ := ebiten.NewImage(int(width), int(height), ebiten.FilterDefault)
-	leftPaddleImage, _ := ebiten.NewImage(50, 100, ebiten.FilterDefault)
-	leftPaddleImage.Fill(color.RGBA{
-		R: 255,
-		G: 0,
-		B: 0,
-		A: 255,
-	})
+	ball := newBall(&canvas)
 
-	rightPaddleImage, _ := ebiten.NewImage(50, 100, ebiten.FilterDefault)
-	rightPaddleImage.Fill(color.RGBA{
-		R: 0,
-		G: 255,
-		B: 0,
-		A: 255,
-	})
+	leftPaddleColor := color.RGBA{R: 255, G: 0, B: 0, A: 255}
+	rightPaddleColor := color.RGBA{R: 0, G: 255, B: 0, A: 255}
 
-	canvas := types.Canvas{
-		X:     padding,
-		Y:     padding,
-		Color: color.White,
-		Image: image,
-	}
+	leftPaddlePos := types.Vector{X: 0, Y: 0}
+	rightPaddlePos := types.Vector{X: float64(canvasWidth - paddleWidth), Y: 0}
 
-	ball := types.NewBall(
-		types.Vector{X: float64(width / 2), Y: float64(height / 2)},
-		types.Vector{X: 1, Y: 1},
-		&canvas,
-		ballImage,
-		radius)
-
-	leftPaddle := types.NewPaddle(
-		types.Vector{X: 0, Y: 0},
-		types.Vector{X: 0, Y: 0},
-		&canvas,
-		leftPaddleImage)
-
-	rightPaddle := types.NewPaddle(
-		types.Vector{X: float64(width - 50), Y: float64(height - 150)},
-		types.Vector{X: 0, Y: 0},
-		&canvas,
-		rightPaddleImage)
+	leftPaddle := NewPaddle(paddleWidth, paddleHeight, leftPaddlePos, leftPaddleColor, &canvas)
+	rightPaddle := NewPaddle(paddleWidth, paddleHeight, rightPaddlePos, rightPaddleColor, &canvas)
 
 	return Game{
 		ball:        &ball,
@@ -81,40 +44,20 @@ func NewGame(screen *ebiten.Image) Game {
 	}
 }
 
-func (g *Game) drawCanvas(screen *ebiten.Image) {
-	options := ebiten.DrawImageOptions{}
-	options.GeoM.Translate(padding, padding)
-	screen.DrawImage(g.ballCanvas.Image, &options)
-}
-
-func getPaddleMoves() (types.Vector, types.Vector) {
-	leftPaddleOffset := types.Vector{0, 0}
-	rightPaddleOffset := types.Vector{0, 0}
-	if ebiten.IsKeyPressed(ebiten.KeyW) {
-		leftPaddleOffset = types.Vector{0, -1}
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyS) {
-		leftPaddleOffset = types.Vector{0, 1}
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyUp) {
-		rightPaddleOffset = types.Vector{0, -1}
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyDown) {
-		rightPaddleOffset = types.Vector{0, 1}
-	}
-	return leftPaddleOffset, rightPaddleOffset
-}
-
-func (g *Game) Draw(screen *ebiten.Image) error {
-	g.ball.Move()
-	leftPaddleOffset, rightPaddleOffset := getPaddleMoves()
-	g.leftPaddle.Move(leftPaddleOffset)
-	g.rightPaddle.Move(rightPaddleOffset)
+func (g *Game) Draw(screen *ebiten.Image) {
 	g.ballCanvas.Fill()
 	g.ball.Draw()
 	g.leftPaddle.Draw()
 	g.rightPaddle.Draw()
-	g.drawCanvas(screen)
+	g.ballCanvas.Draw(screen)
+}
+
+func (g *Game) Tick(screen *ebiten.Image) error {
+	leftPaddleOffset, rightPaddleOffset := getPaddleMoves()
+	g.ball.Move()
+	g.leftPaddle.Move(leftPaddleOffset)
+	g.rightPaddle.Move(rightPaddleOffset)
+	g.Draw(screen)
 	return nil
 }
 

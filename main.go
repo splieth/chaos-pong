@@ -15,7 +15,7 @@ func main() {
 	width, height := screen.Size()
 	pong = game.NewGame(screen)
 
-	if err := ebiten.Run(pong.Draw, width, height, 1, "Chaos Pong!"); err != nil {
+	if err := ebiten.Run(pong.Tick, width, height, 1, "Chaos Pong!"); err != nil {
 		log.Fatal(err)
 	}
 }

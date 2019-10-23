@@ -5,7 +5,7 @@ import (
 )
 
 type Object struct {
-	pos, dir Vector
-	image    *ebiten.Image
-	canvas   *Canvas
+	Pos, Dir Vector
+	Image    *ebiten.Image
+	Canvas   *Canvas
 }
