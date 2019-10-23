@@ -7,5 +7,5 @@ import (
 type Object struct {
 	pos, vel Vector
 	image    *ebiten.Image
-	canvas   *ebiten.Image
+	canvas   *Canvas
 }
