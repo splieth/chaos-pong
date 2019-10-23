@@ -14,7 +14,7 @@ func NewBall(startPosition, direction Vector, canvas *Canvas, image *ebiten.Imag
 		Radius: radius,
 		Object: Object{
 			pos:    startPosition,
-			vel:    direction,
+			dir:    direction,
 			image:  image,
 			canvas: canvas,
 		},
@@ -24,20 +24,20 @@ func NewBall(startPosition, direction Vector, canvas *Canvas, image *ebiten.Imag
 func (b *Ball) Move() {
 	canvasWidth, canvasHeight := b.canvas.Image.Size()
 	if b.pos.X < 0 {
-		b.vel.X = -b.vel.X
+		b.dir.X = -b.dir.X
 	}
 	if b.pos.X > float64(canvasWidth-2*b.Radius) {
-		b.vel.X = -b.vel.X
+		b.dir.X = -b.dir.X
 	}
 	if b.pos.Y < 0 {
-		b.vel.Y = -b.vel.Y
+		b.dir.Y = -b.dir.Y
 	}
 	if b.pos.Y > float64(canvasHeight-2*b.Radius) {
-		b.vel.Y = -b.vel.Y
+		b.dir.Y = -b.dir.Y
 	}
 
-	b.pos.X = b.pos.X + b.vel.X
-	b.pos.Y = b.pos.Y + b.vel.Y
+	b.pos.X = b.pos.X + b.dir.X
+	b.pos.Y = b.pos.Y + b.dir.Y
 }
 
 func (ball *Ball) Draw() {
