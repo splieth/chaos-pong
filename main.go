@@ -10,13 +10,11 @@ var (
 	pong game.Game
 )
 
-func init() {
-	pong = game.NewGame()
-}
-
 func main() {
-	screen, _ := ebiten.NewImage(320, 240, ebiten.FilterDefault)
+	screen, _ := ebiten.NewImage(500, 500, ebiten.FilterDefault)
 	width, height := screen.Size()
+	pong = game.NewGame(screen)
+
 	if err := ebiten.Run(pong.Draw, width, height, 1, "Chaos Pong!"); err != nil {
 		log.Fatal(err)
 	}

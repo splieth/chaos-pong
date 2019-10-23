@@ -12,25 +12,41 @@ const (
 )
 
 type Game struct {
-	ball *types.Ball
+	ball       *types.Ball
+	ballCanvas *ebiten.Image
 }
 
-func NewGame() Game {
+func NewGame(screen *ebiten.Image) Game {
 	ballImage := LoadImage("resources/ball.png")
-	width, _ := ballImage.Size()
-	radius := width / 2
+	ballWidth, _ := ballImage.Size()
+	radius := ballWidth / 2
+	canvas, _ := ebiten.NewImage(250, 250, ebiten.FilterDefault)
+
 	ball := types.NewBall(
 		types.Vector{X: 0, Y: 0},
 		types.Vector{X: 1, Y: 1},
+		canvas,
 		ballImage,
 		radius)
 	return Game{
-		ball: &ball,
+		ball:       &ball,
+		ballCanvas: canvas,
 	}
 }
+func (g *Game) fillCanvas() {
+	img := LoadImage("resources/grass.png")
+	options := ebiten.DrawImageOptions{}
+	g.ballCanvas.DrawImage(img, &options)
+}
+func (g *Game) drawCanvas(screen *ebiten.Image) {
+	screen.DrawImage(g.ballCanvas, &ebiten.DrawImageOptions{})
+}
 
-func (game *Game) Draw(screen *ebiten.Image) error {
-	game.ball.Draw(screen)
+func (g *Game) Draw(screen *ebiten.Image) error {
+	g.ball.Move()
+	g.fillCanvas()
+	g.ball.Draw()
+	g.drawCanvas(screen)
 	return nil
 }
 
@@ -41,4 +57,3 @@ func LoadImage(path string) *ebiten.Image {
 	}
 	return image
 }
-

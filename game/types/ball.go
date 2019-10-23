@@ -9,21 +9,20 @@ type Ball struct {
 	Object
 }
 
-func NewBall(startPosition, direction Vector, image *ebiten.Image, radius int) Ball {
+func NewBall(startPosition, direction Vector, canvas *ebiten.Image, image *ebiten.Image, radius int) Ball {
 	return Ball{
 		Radius: radius,
 		Object: Object{
-			pos:   startPosition,
-			vel:   direction,
-			image: image,
+			pos:    startPosition,
+			vel:    direction,
+			image:  image,
+			canvas: canvas,
 		},
 	}
 }
 
-func (ball *Ball) Move(screen *ebiten.Image) {
-	imageOptions := ebiten.DrawImageOptions{}
-
-	screenWidth, screenHeight := screen.Size()
+func (ball *Ball) Move() {
+	screenWidth, screenHeight := ball.canvas.Size()
 	if ball.pos.X < 0 {
 		ball.vel.X = -ball.vel.X
 	}
@@ -39,10 +38,10 @@ func (ball *Ball) Move(screen *ebiten.Image) {
 
 	ball.pos.X = ball.pos.X + ball.vel.X
 	ball.pos.Y = ball.pos.Y + ball.vel.Y
-	imageOptions.GeoM.Translate(ball.pos.X, ball.pos.Y)
-	_ = screen.DrawImage(ball.image, &imageOptions)
 }
 
-func (ball *Ball) Draw(screen *ebiten.Image) {
-	ball.Move(screen)
+func (ball *Ball) Draw() {
+	imageOptions := ebiten.DrawImageOptions{}
+	imageOptions.GeoM.Translate(ball.pos.X, ball.pos.Y)
+	_ = ball.canvas.DrawImage(ball.image, &imageOptions)
 }
