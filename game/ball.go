@@ -6,7 +6,8 @@ import (
 )
 
 type Ball struct {
-	Radius int
+	Radius   int
+	Diameter int
 	types.Object
 }
 
@@ -17,6 +18,7 @@ func newBall(canvas *types.Canvas) Ball {
 	canvasWidth, canvasHeight := canvas.Image.Size()
 	return Ball{
 		Radius: ballRadius,
+		Diameter:ballDiameter,
 		Object: types.Object{
 			Pos:    types.Vector{X: float64(canvasWidth / 2), Y: float64(canvasHeight / 2)},
 			Dir:    types.Vector{X: 1, Y: 1},
