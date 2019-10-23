@@ -8,6 +8,8 @@ import (
 	"log"
 )
 
+const padding float64 = 10
+
 type Game struct {
 	ball        *types.Ball
 	ballCanvas  *types.Canvas
@@ -23,10 +25,12 @@ func getCenter(screen *ebiten.Image) (float64, float64) {
 func NewGame(screen *ebiten.Image) Game {
 	ballImage := LoadImage("resources/ball.png")
 	ballWidth, _ := ballImage.Size()
+	w, h := screen.Size()
+	width := float64(w) - 2*padding
+	height := float64(h) - 2*padding
+
 	radius := ballWidth / 2
-	posX, posY := getCenter(screen)
-	saize := 250
-	image, _ := ebiten.NewImage(saize, saize, ebiten.FilterDefault)
+	image, _ := ebiten.NewImage(int(width), int(height), ebiten.FilterDefault)
 	leftPaddleImage, _ := ebiten.NewImage(50, 100, ebiten.FilterDefault)
 	leftPaddleImage.Fill(color.RGBA{
 		R: 255,
@@ -44,14 +48,14 @@ func NewGame(screen *ebiten.Image) Game {
 	})
 
 	canvas := types.Canvas{
-		X:     posX - float64(saize/2),
-		Y:     posY - float64(saize/2),
+		X:     padding,
+		Y:     padding,
 		Color: color.White,
 		Image: image,
 	}
 
 	ball := types.NewBall(
-		types.Vector{X: float64(saize / 2), Y: float64(saize / 2)},
+		types.Vector{X: float64(width / 2), Y: float64(height / 2)},
 		types.Vector{X: 1, Y: 1},
 		&canvas,
 		ballImage,
@@ -64,7 +68,7 @@ func NewGame(screen *ebiten.Image) Game {
 		leftPaddleImage)
 
 	rightPaddle := types.NewPaddle(
-		types.Vector{X: float64(saize - 50), Y: float64(saize - 150)},
+		types.Vector{X: float64(width - 50), Y: float64(height - 150)},
 		types.Vector{X: 0, Y: 0},
 		&canvas,
 		rightPaddleImage)
@@ -79,8 +83,7 @@ func NewGame(screen *ebiten.Image) Game {
 
 func (g *Game) drawCanvas(screen *ebiten.Image) {
 	options := ebiten.DrawImageOptions{}
-	width, height := screen.Size()
-	options.GeoM.Translate(float64(width/4), float64(height/4))
+	options.GeoM.Translate(padding, padding)
 	screen.DrawImage(g.ballCanvas.Image, &options)
 }
 

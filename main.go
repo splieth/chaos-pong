@@ -11,7 +11,7 @@ var (
 )
 
 func main() {
-	screen, _ := ebiten.NewImage(500, 500, ebiten.FilterDefault)
+	screen, _ := ebiten.NewImage(1280, 720, ebiten.FilterDefault)
 	width, height := screen.Size()
 	pong = game.NewGame(screen)
 
