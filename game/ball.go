@@ -27,22 +27,7 @@ func newBall(canvas *types.Canvas) Ball {
 }
 
 func (ball *Ball) Move() {
-	canvasWidth, canvasHeight := ball.Canvas.Image.Size()
-	if ball.Pos.X < 0 {
-		ball.Dir.X = -ball.Dir.X
-	}
-	if ball.Pos.X > float64(canvasWidth-2*ball.Radius) {
-		ball.Dir.X = -ball.Dir.X
-	}
-	if ball.Pos.Y < 0 {
-		ball.Dir.Y = -ball.Dir.Y
-	}
-	if ball.Pos.Y > float64(canvasHeight-2*ball.Radius) {
-		ball.Dir.Y = -ball.Dir.Y
-	}
-
-	ball.Pos.X = ball.Pos.X + ball.Dir.X
-	ball.Pos.Y = ball.Pos.Y + ball.Dir.Y
+	ball.Pos = ball.Pos.Add(ball.Dir)
 }
 
 func (ball *Ball) Draw() {

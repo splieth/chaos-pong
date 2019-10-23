@@ -57,6 +57,7 @@ func (g *Game) Tick(screen *ebiten.Image) error {
 	g.ball.Move()
 	g.leftPaddle.Move(leftPaddleOffset)
 	g.rightPaddle.Move(rightPaddleOffset)
+	g.handleBallCanvasCollision()
 	g.Draw(screen)
 	return nil
 }
