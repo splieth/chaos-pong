@@ -16,6 +16,8 @@ func NewPaddle(width, height int, pos types.Vector, color color.Color, canvas *t
 	image, _ := ebiten.NewImage(width, height, ebiten.FilterDefault)
 	_ = image.Fill(color)
 	return Paddle{
+		Width:  paddleWidth,
+		Height: paddleHeight,
 		Object: types.Object{
 			Pos:    pos,
 			Dir:    types.Vector{X: 0, Y: 0},

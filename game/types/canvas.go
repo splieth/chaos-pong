@@ -8,6 +8,8 @@ import (
 type Canvas struct {
 	Pos    Vector
 	Center Vector
+	Width  float64
+	Height float64
 	Color  color.Color
 	Image  *ebiten.Image
 	Screen *ebiten.Image
@@ -20,6 +22,8 @@ func NewCanvas(screen *ebiten.Image, originPoint Vector, padding float64) Canvas
 	canvasImage, _ := ebiten.NewImage(int(canvasWidth), int(canvasHeight), ebiten.FilterDefault)
 	return Canvas{
 		Pos:    originPoint,
+		Width:  canvasWidth,
+		Height: canvasHeight,
 		Center: Vector{X: canvasWidth / 2, Y: canvasHeight / 2},
 		Color:  color.White,
 		Image:  canvasImage,
