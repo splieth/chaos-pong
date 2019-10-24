@@ -1,3 +1,5 @@
 chaos-pong
 .idea/
 testlogfile-*
+client/client
+server/server
