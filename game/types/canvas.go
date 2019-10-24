@@ -15,10 +15,7 @@ type Canvas struct {
 	Screen *ebiten.Image
 }
 
-func NewCanvas(screen *ebiten.Image, originPoint Vector, padding float64) Canvas {
-	screenWidth, screenHeight := screen.Size()
-	canvasWidth := float64(screenWidth) - 2*padding
-	canvasHeight := float64(screenHeight) - 2*padding
+func NewCanvas(originPoint Vector, canvasWidth, canvasHeight float64) Canvas {
 	canvasImage, _ := ebiten.NewImage(int(canvasWidth), int(canvasHeight), ebiten.FilterDefault)
 	return Canvas{
 		Pos:    originPoint,

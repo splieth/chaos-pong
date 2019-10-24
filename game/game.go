@@ -10,39 +10,42 @@ import (
 )
 
 const (
-	canvasPadding = 50.0
-	paddleWidth   = 25
-	paddleHeight  = 150
-	player1       = "player1"
-	player2       = "player2"
+	canvasPadding     = 50.0
+	scoreCanvasHeight = 50
+	paddleWidth       = 25
+	paddleHeight      = 150
+	player1           = "player1"
+	player2           = "player2"
 )
 
 type Game struct {
 	ball        *Ball
 	ballCanvas  *types.Canvas
+	scoreCanvas *types.Canvas
 	leftPaddle  *Paddle
 	rightPaddle *Paddle
 	score       map[string]int
 }
 
 func NewGame(screen *ebiten.Image, basePath string) Game {
-	canvas := types.NewCanvas(screen, types.Vector{X: canvasPadding, Y: canvasPadding}, canvasPadding)
-	canvasWidth, _ := canvas.Image.Size()
+	ballCanvas := createBallCanvas(screen)
+	scoreCanvas := createScoreCanvas(screen, ballCanvas.Height+10+canvasPadding)
 
-	ball := newBall(&canvas, basePath)
+	ball := newBall(&ballCanvas, basePath)
 
 	leftPaddleColor := color.RGBA{R: 255, G: 0, B: 0, A: 255}
 	rightPaddleColor := color.RGBA{R: 0, G: 255, B: 0, A: 255}
 
 	leftPaddlePos := types.Vector{X: 0, Y: 0}
-	rightPaddlePos := types.Vector{X: float64(canvasWidth - paddleWidth), Y: 0}
+	rightPaddlePos := types.Vector{X: ballCanvas.Width - paddleWidth, Y: 0}
 
-	leftPaddle := NewPaddle(paddleWidth, paddleHeight, leftPaddlePos, leftPaddleColor, &canvas)
-	rightPaddle := NewPaddle(paddleWidth, paddleHeight, rightPaddlePos, rightPaddleColor, &canvas)
+	leftPaddle := NewPaddle(paddleWidth, paddleHeight, leftPaddlePos, leftPaddleColor, &ballCanvas)
+	rightPaddle := NewPaddle(paddleWidth, paddleHeight, rightPaddlePos, rightPaddleColor, &ballCanvas)
 
 	return Game{
 		ball:        &ball,
-		ballCanvas:  &canvas,
+		ballCanvas:  &ballCanvas,
+		scoreCanvas: &scoreCanvas,
 		leftPaddle:  &leftPaddle,
 		rightPaddle: &rightPaddle,
 		score: map[string]int{
@@ -52,23 +55,40 @@ func NewGame(screen *ebiten.Image, basePath string) Game {
 	}
 }
 
+func createBallCanvas(screen *ebiten.Image) types.Canvas {
+	screenWidth, screenHeight := screen.Size()
+	canvasWidth := float64(screenWidth) - 2*canvasPadding
+	canvasHeight := float64(screenHeight) - 2*canvasPadding - scoreCanvasHeight
+	ballCanvas := types.NewCanvas(types.Vector{X: canvasPadding, Y: canvasPadding}, canvasWidth, canvasHeight)
+	return ballCanvas
+}
+
+func createScoreCanvas(screen *ebiten.Image, yCoordinate float64) types.Canvas {
+	screenWidth, _ := screen.Size()
+	canvasWidth := float64(screenWidth) - 2*canvasPadding
+	scoreCanvas := types.NewCanvas(types.Vector{X: canvasPadding, Y: yCoordinate}, canvasWidth, scoreCanvasHeight)
+	scoreCanvas.Color = color.Black
+	return scoreCanvas
+}
+
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.ballCanvas.Fill()
+	g.scoreCanvas.Fill()
 	g.ball.Draw()
 	g.leftPaddle.Draw()
 	g.rightPaddle.Draw()
 	g.ballCanvas.Draw(screen)
+	//_ = ebitenutil.DebugPrint(g.scoreCanvas.Image, string(g.score[player1]) + ":" + string(g.score[player2]))
+	g.scoreCanvas.Draw(screen)
 }
 
 func (g *Game) handleScores(wall Wall) {
 	if wall == RightWall {
 		g.score[player1]++
-		log.Println(g.score)
 		g.reset()
 	}
 	if wall == LeftWall {
 		g.score[player2]++
-		log.Println(g.score)
 		g.reset()
 	}
 }
