@@ -54,6 +54,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 func (g *Game) Tick(screen *ebiten.Image) error {
 	leftPaddleOffset, rightPaddleOffset := getPaddleMoves()
+	handleExit()
 	g.handleBallCanvasCollision()
 	g.ball.Move()
 	g.handlePaddelCanvasCollision()

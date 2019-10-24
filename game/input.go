@@ -3,6 +3,7 @@ package game
 import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/splieth/chaos-pong/game/types"
+	"os"
 )
 
 func getPaddleMoves() (types.Vector, types.Vector) {
@@ -21,4 +22,10 @@ func getPaddleMoves() (types.Vector, types.Vector) {
 		rightPaddleOffset = types.Vector{0, 1}
 	}
 	return leftPaddleOffset, rightPaddleOffset
+}
+
+func handleExit() {
+	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
+		os.Exit(0)
+	}
 }
