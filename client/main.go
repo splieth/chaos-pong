@@ -10,7 +10,6 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-
 func main() {
 	addr := "localhost:4321"
 
@@ -32,6 +31,21 @@ func main() {
 		defer close(done)
 		for {
 			_, message, err := c.ReadMessage()
+			log.Println(message[0])
+			log.Println(message[1])
+			switch string(message[0]) {
+			case "r":
+				id := string(message[1])
+				log.Println("Ich bin jetzt", id)
+			case "u":
+				log.Println(string(message[1]))
+				log.Println("moving up")
+			case "d":
+				log.Println(string(message[1]))
+				log.Println("moving down")
+			default:
+				log.Println("defaultism")
+			}
 			if err != nil {
 				log.Println("read:", err)
 				return
@@ -40,19 +54,15 @@ func main() {
 		}
 	}()
 
-	ticker := time.NewTicker(time.Second)
-	defer ticker.Stop()
+	register := "r"
+	up := "u1"
+	_ = c.WriteMessage(websocket.TextMessage, []byte(register))
+	_ = c.WriteMessage(websocket.TextMessage, []byte(up))
 
 	for {
 		select {
 		case <-done:
 			return
-		case t := <-ticker.C:
-			err := c.WriteMessage(websocket.TextMessage, []byte(t.String()))
-			if err != nil {
-				log.Println("write:", err)
-				return
-			}
 		case <-interrupt:
 			log.Println("interrupt")
 

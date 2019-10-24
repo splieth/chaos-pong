@@ -2,27 +2,21 @@ package main
 
 import (
 	"github.com/gorilla/websocket"
-	"github.com/splieth/chaos-pong/game"
 	"log"
 	"net/http"
 )
 
-type Session struct {
-	Game    *game.Game
-	Clients []Client
-	Name    string
-}
-
 type Server struct {
-	Addr string
+	Addr    string
+	Clients []Client
 }
 
 type Client struct {
 	Id string
 }
 
-var sessions []Session
-
+var server Server
+var counter int = 0
 var upgrader = websocket.Upgrader{} // use default options
 
 func echo(w http.ResponseWriter, r *http.Request) {
@@ -33,16 +27,25 @@ func echo(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 	for {
-		mt, message, err := c.ReadMessage()
+		_, message, err := c.ReadMessage()
 		if err != nil {
 			log.Println("read:", err)
 			break
 		}
-		log.Printf("recv: %s", message)
-		err = c.WriteMessage(mt, message)
-		if err != nil {
-			log.Println("write:", err)
-			break
+		//s := string(message)
+		switch string(message[0]) {
+		case "r":
+			server.Clients = append(server.Clients, Client{Id: string(counter)})
+			c.WriteMessage(websocket.TextMessage, []byte("r"+string(counter)))
+			counter++
+		case "u":
+			log.Println(string(message[1]))
+			log.Println("moving up")
+		case "d":
+			log.Println(string(message[1]))
+			log.Println("moving down")
+		default:
+			log.Println("defaultism")
 		}
 	}
 }
