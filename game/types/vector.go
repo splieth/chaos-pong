@@ -1,6 +1,7 @@
 package types
 
 import (
+	"math"
 	"math/rand"
 )
 
@@ -13,12 +14,27 @@ func (v *Vector) Add(other Vector) {
 	v.Y += other.Y
 }
 
+func (v *Vector) Multiply(scalar float64) {
+	v.X *= scalar
+	v.Y *= scalar
+}
+
 func (v *Vector) InvertX() {
 	v.X *= -1
 }
 
 func (v *Vector) InvertY() {
 	v.Y *= -1
+}
+
+func (v *Vector) Norm() float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+
+func (v *Vector) Normalize() {
+	norm := v.Norm()
+	v.X = v.X / norm
+	v.Y = v.Y / norm
 }
 
 func (v *Vector) Randomize() {

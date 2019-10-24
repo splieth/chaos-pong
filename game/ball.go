@@ -19,20 +19,23 @@ func newBall(canvas *types.Canvas, basePath string) Ball {
 		Radius:   ballRadius,
 		Diameter: ballDiameter,
 		Object: types.Object{
-			Pos:    canvas.Center,
-			Dir:    types.Vector{X: 1, Y: 1},
-			Image:  ballImage,
-			Canvas: canvas,
+			Pos:      canvas.Center,
+			Dir:      types.Vector{X: 1, Y: 1},
+			Image:    ballImage,
+			Canvas:   canvas,
+			Velocity: 10,
 		},
 	}
 }
 
-func (ball *Ball) Move() {
-	ball.Pos.Add(ball.Dir)
+func (b *Ball) Move() {
+	b.Dir.Normalize()
+	b.Dir.Multiply(b.Velocity)
+	b.Pos.Add(b.Dir)
 }
 
-func (ball *Ball) Draw() {
+func (b *Ball) Draw() {
 	imageOptions := ebiten.DrawImageOptions{}
-	imageOptions.GeoM.Translate(ball.Pos.X, ball.Pos.Y)
-	_ = ball.Canvas.Image.DrawImage(ball.Image, &imageOptions)
+	imageOptions.GeoM.Translate(b.Pos.X, b.Pos.Y)
+	_ = b.Canvas.Image.DrawImage(b.Image, &imageOptions)
 }

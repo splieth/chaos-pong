@@ -1,14 +1,5 @@
 package game
 
-import (
-	"github.com/splieth/chaos-pong/game/types"
-)
-
-var (
-	paddleUp   = types.Vector{X: 0, Y: 1}
-	paddleDown = types.Vector{X: 0, Y: -1}
-)
-
 type Wall int
 
 const (
@@ -38,21 +29,6 @@ func (g *Game) handleBallCanvasCollision() Wall {
 		return LeftWall
 	}
 	return NoWall
-}
-
-func (g *Game) handlePaddleCanvasCollision() {
-	if g.leftPaddle.Pos.Y < 0 {
-		g.leftPaddle.Pos.Add(paddleUp)
-	}
-	if g.leftPaddle.Pos.Y+g.leftPaddle.Height >= g.ballCanvas.Height {
-		g.leftPaddle.Pos.Add(paddleDown)
-	}
-	if g.rightPaddle.Pos.Y < 0 {
-		g.rightPaddle.Pos.Add(paddleUp)
-	}
-	if g.rightPaddle.Pos.Y+g.rightPaddle.Height >= g.ballCanvas.Height {
-		g.rightPaddle.Pos.Add(paddleDown)
-	}
 }
 
 func (g *Game) handleBallPaddleCollision() {

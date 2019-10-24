@@ -4,6 +4,7 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/splieth/chaos-pong/game/types"
 	"image/color"
+	"math"
 )
 
 type Paddle struct {
@@ -19,10 +20,11 @@ func NewPaddle(width, height int, pos types.Vector, color color.Color, canvas *t
 		Width:  paddleWidth,
 		Height: paddleHeight,
 		Object: types.Object{
-			Pos:    pos,
-			Dir:    types.Vector{X: 0, Y: 0},
-			Image:  image,
-			Canvas: canvas,
+			Pos:      pos,
+			Dir:      types.Vector{X: 0, Y: 0},
+			Image:    image,
+			Canvas:   canvas,
+			Velocity: 10,
 		},
 	}
 }
@@ -34,5 +36,11 @@ func (p *Paddle) Draw() {
 }
 
 func (p *Paddle) Move(offset types.Vector) {
-	p.Pos.Add(offset)
+	if offset.Norm() > 0 {
+		offset.Normalize()
+		offset.Multiply(p.Velocity)
+		p.Pos.Add(offset)
+		p.Pos.Y = math.Max(p.Pos.Y, 0)
+		p.Pos.Y = math.Min(p.Pos.Y, p.Canvas.Height-p.Height)
+	}
 }

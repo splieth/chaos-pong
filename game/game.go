@@ -71,15 +71,14 @@ func (g *Game) handleScores(wall Wall) {
 }
 
 func (g *Game) Tick(screen *ebiten.Image) error {
-	leftPaddleOffset, rightPaddleOffset := getPaddleMoves()
 	handleExit()
 	collidedWall := g.handleBallCanvasCollision()
+	leftPaddleOffset, rightPaddleOffset := getPaddleMoves()
+	g.leftPaddle.Move(leftPaddleOffset)
+	g.rightPaddle.Move(rightPaddleOffset)
 	g.handleScores(collidedWall)
 	g.handleBallPaddleCollision()
 	g.ball.Move()
-	g.handlePaddleCanvasCollision()
-	g.leftPaddle.Move(leftPaddleOffset)
-	g.rightPaddle.Move(rightPaddleOffset)
 	g.Draw(screen)
 	return nil
 }
