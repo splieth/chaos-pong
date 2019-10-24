@@ -1,11 +1,12 @@
 package game
 
 import (
+	"image/color"
+	"log"
+
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/splieth/chaos-pong/game/types"
-	"image/color"
-	"log"
 )
 
 const (
@@ -56,8 +57,9 @@ func (g *Game) Tick(screen *ebiten.Image) error {
 	leftPaddleOffset, rightPaddleOffset := getPaddleMoves()
 	handleExit()
 	g.handleBallCanvasCollision()
+	g.handlePaddleBallCollision()
 	g.ball.Move()
-	g.handlePaddelCanvasCollision()
+	g.handlePaddleCanvasCollision()
 	g.leftPaddle.Move(leftPaddleOffset)
 	g.rightPaddle.Move(rightPaddleOffset)
 	g.Draw(screen)

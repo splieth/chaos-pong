@@ -19,7 +19,7 @@ func (g *Game) handleBallCanvasCollision() {
 	}
 }
 
-func (g *Game) handlePaddelCanvasCollision() {
+func (g *Game) handlePaddleCanvasCollision() {
 	if g.leftPaddle.Pos.Y < 0 {
 		g.leftPaddle.Pos.Add(paddleUp)
 	}
@@ -31,5 +31,23 @@ func (g *Game) handlePaddelCanvasCollision() {
 	}
 	if g.rightPaddle.Pos.Y+g.rightPaddle.Height >= g.ballCanvas.Height {
 		g.rightPaddle.Pos.Add(paddleDown)
+	}
+}
+
+func (g *Game) handlePaddleBallCollision() {
+	ballPos := g.ball.Pos
+	leftPaddlePos := g.leftPaddle.Pos
+	rightPaddlePos := g.rightPaddle.Pos
+	if ballPos.X <= leftPaddlePos.X+g.leftPaddle.Width &&
+		ballPos.Y <= leftPaddlePos.Y+g.leftPaddle.Height &&
+		ballPos.Y >= leftPaddlePos.Y {
+		g.ball.Dir.InvertX()
+		g.ball.Dir.Randomize()
+	}
+	if ballPos.X+float64(g.ball.Diameter) >= rightPaddlePos.X &&
+		ballPos.Y <= rightPaddlePos.Y+g.rightPaddle.Height &&
+		ballPos.Y >= rightPaddlePos.Y {
+		g.ball.Dir.InvertX()
+		g.ball.Dir.Randomize()
 	}
 }

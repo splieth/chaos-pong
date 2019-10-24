@@ -1,7 +1,6 @@
 package types
 
 import (
-	"log"
 	"math/rand"
 )
 
@@ -29,6 +28,5 @@ func (v *Vector) Randomize() {
 	} else {
 		randomAddition = float64(rand.Intn(1000)) / 1000
 	}
-	log.Printf("Got randomAddition: %f", randomAddition)
 	v.Y += randomAddition
 }
