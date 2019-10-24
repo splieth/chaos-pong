@@ -13,6 +13,8 @@ const (
 	canvasPadding = 50.0
 	paddleWidth   = 25
 	paddleHeight  = 150
+	player1       = "player1"
+	player2       = "player2"
 )
 
 type Game struct {
@@ -20,6 +22,7 @@ type Game struct {
 	ballCanvas  *types.Canvas
 	leftPaddle  *Paddle
 	rightPaddle *Paddle
+	score       map[string]int
 }
 
 func NewGame(screen *ebiten.Image) Game {
@@ -42,6 +45,10 @@ func NewGame(screen *ebiten.Image) Game {
 		ballCanvas:  &canvas,
 		leftPaddle:  &leftPaddle,
 		rightPaddle: &rightPaddle,
+		score: map[string]int{
+			player1: 0,
+			player2: 0,
+		},
 	}
 }
 
@@ -53,11 +60,23 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.ballCanvas.Draw(screen)
 }
 
+func (g *Game) handleScores(wall Wall) {
+	if wall == RightWall {
+		g.score[player1]++
+		log.Println(g.score)
+	}
+	if wall == LeftWall {
+		g.score[player2]++
+		log.Println(g.score)
+	}
+}
+
 func (g *Game) Tick(screen *ebiten.Image) error {
 	leftPaddleOffset, rightPaddleOffset := getPaddleMoves()
 	handleExit()
-	g.handleBallCanvasCollision()
-	g.handlePaddleBallCollision()
+	collidedWall := g.handleBallCanvasCollision()
+	g.handleScores(collidedWall)
+	g.handleBallPaddleCollision()
 	g.ball.Move()
 	g.handlePaddleCanvasCollision()
 	g.leftPaddle.Move(leftPaddleOffset)

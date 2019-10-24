@@ -9,14 +9,35 @@ var (
 	paddleDown = types.Vector{X: 0, Y: -1}
 )
 
-func (g *Game) handleBallCanvasCollision() {
+type Wall int
+
+const (
+	TopWall = iota
+	RightWall
+	BottomWall
+	LeftWall
+	NoWall
+)
+
+func (g *Game) handleBallCanvasCollision() Wall {
 	canvasWidth, canvasHeight := g.ball.Canvas.Image.Size()
-	if g.ball.Pos.X < 0 || g.ball.Pos.X > float64(canvasWidth-g.ball.Diameter) {
-		g.ball.Dir.InvertX()
-	}
-	if g.ball.Pos.Y < 0 || g.ball.Pos.Y > float64(canvasHeight-g.ball.Diameter) {
+	if g.ball.Pos.Y < 0 {
 		g.ball.Dir.InvertY()
+		return TopWall
 	}
+	if g.ball.Pos.X > float64(canvasWidth-g.ball.Diameter) {
+		g.ball.Dir.InvertX()
+		return RightWall
+	}
+	if g.ball.Pos.Y > float64(canvasHeight-g.ball.Diameter) {
+		g.ball.Dir.InvertY()
+		return BottomWall
+	}
+	if g.ball.Pos.X < 0 {
+		g.ball.Dir.InvertX()
+		return LeftWall
+	}
+	return NoWall
 }
 
 func (g *Game) handlePaddleCanvasCollision() {
@@ -34,7 +55,7 @@ func (g *Game) handlePaddleCanvasCollision() {
 	}
 }
 
-func (g *Game) handlePaddleBallCollision() {
+func (g *Game) handleBallPaddleCollision() {
 	ballPos := g.ball.Pos
 	leftPaddlePos := g.leftPaddle.Pos
 	rightPaddlePos := g.rightPaddle.Pos
