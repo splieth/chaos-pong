@@ -1,5 +1,10 @@
 package types
 
+import (
+	"log"
+	"math/rand"
+)
+
 type Vector struct {
 	X, Y float64
 }
@@ -15,4 +20,15 @@ func (v *Vector) InvertX() {
 
 func (v *Vector) InvertY() {
 	v.Y *= -1
+}
+
+func (v *Vector) Randomize() {
+	var randomAddition float64
+	if v.Y > 0 {
+		randomAddition = -float64(rand.Intn(1000)) / 1000
+	} else {
+		randomAddition = float64(rand.Intn(1000)) / 1000
+	}
+	log.Printf("Got randomAddition: %f", randomAddition)
+	v.Y += randomAddition
 }
