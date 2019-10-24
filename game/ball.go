@@ -36,6 +36,7 @@ func (b *Ball) Move() {
 	b.Dir.Normalize()
 	b.Dir.Multiply(b.Velocity)
 	b.Pos.Add(b.Dir)
+	b.Dir.Normalize()
 }
 
 func (b *Ball) Draw() {
