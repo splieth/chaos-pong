@@ -4,6 +4,11 @@ import (
 	"github.com/splieth/chaos-pong/game/types"
 )
 
+var (
+	paddleUp   = types.Vector{X: 0, Y: 1}
+	paddleDown = types.Vector{X: 0, Y: -1}
+)
+
 func (g *Game) handleBallCanvasCollision() {
 	canvasWidth, canvasHeight := g.ball.Canvas.Image.Size()
 	if g.ball.Pos.X < 0 || g.ball.Pos.X > float64(canvasWidth-g.ball.Diameter) {
@@ -15,18 +20,16 @@ func (g *Game) handleBallCanvasCollision() {
 }
 
 func (g *Game) handlePaddelCanvasCollision() {
-	down := types.Vector{X: 0, Y: 1}
-	up := types.Vector{X: 0, Y: -1}
 	if g.leftPaddle.Pos.Y < 0 {
-		g.leftPaddle.Pos.Add(down)
+		g.leftPaddle.Pos.Add(paddleUp)
 	}
-	if g.leftPaddle.Pos.Y+g.leftPaddle.Height > g.ballCanvas.Height {
-		g.leftPaddle.Pos.Add(up)
+	if g.leftPaddle.Pos.Y+g.leftPaddle.Height >= g.ballCanvas.Height {
+		g.leftPaddle.Pos.Add(paddleDown)
 	}
 	if g.rightPaddle.Pos.Y < 0 {
-		g.rightPaddle.Pos.Add(down)
+		g.rightPaddle.Pos.Add(paddleUp)
 	}
-	if g.rightPaddle.Pos.Y+g.rightPaddle.Height > g.ballCanvas.Height {
-		g.rightPaddle.Pos.Add(up)
+	if g.rightPaddle.Pos.Y+g.rightPaddle.Height >= g.ballCanvas.Height {
+		g.rightPaddle.Pos.Add(paddleDown)
 	}
 }
