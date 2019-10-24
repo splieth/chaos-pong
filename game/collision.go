@@ -40,11 +40,13 @@ func (g *Game) handleBallPaddleCollision() {
 		ballPos.Y >= leftPaddlePos.Y {
 		g.ball.Dir.InvertX()
 		g.ball.Dir.Randomize()
+		g.ball.Velocity++
 	}
 	if ballPos.X+float64(g.ball.Diameter) >= rightPaddlePos.X &&
 		ballPos.Y <= rightPaddlePos.Y+g.rightPaddle.Height &&
 		ballPos.Y >= rightPaddlePos.Y {
 		g.ball.Dir.InvertX()
 		g.ball.Dir.Randomize()
+		g.ball.Velocity++
 	}
 }

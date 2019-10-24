@@ -6,6 +6,7 @@ import (
 	"github.com/splieth/chaos-pong/game/types"
 	"image/color"
 	"log"
+	"time"
 )
 
 const (
@@ -63,11 +64,19 @@ func (g *Game) handleScores(wall Wall) {
 	if wall == RightWall {
 		g.score[player1]++
 		log.Println(g.score)
+		g.reset()
 	}
 	if wall == LeftWall {
 		g.score[player2]++
 		log.Println(g.score)
+		g.reset()
 	}
+}
+
+func (g *Game) reset() {
+	time.Sleep(1 * time.Second)
+	g.ball.Pos = g.ballCanvas.Center
+	g.ball.Velocity = InitialBallSpeed
 }
 
 func (g *Game) Tick(screen *ebiten.Image) error {

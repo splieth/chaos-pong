@@ -5,6 +5,10 @@ import (
 	"github.com/splieth/chaos-pong/game/types"
 )
 
+const (
+	InitialBallSpeed = 10
+)
+
 type Ball struct {
 	Radius   int
 	Diameter int
@@ -23,7 +27,7 @@ func newBall(canvas *types.Canvas, basePath string) Ball {
 			Dir:      types.Vector{X: 1, Y: 1},
 			Image:    ballImage,
 			Canvas:   canvas,
-			Velocity: 10,
+			Velocity: InitialBallSpeed,
 		},
 	}
 }
