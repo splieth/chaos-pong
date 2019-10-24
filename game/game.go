@@ -1,12 +1,11 @@
 package game
 
 import (
-	"image/color"
-	"log"
-
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/splieth/chaos-pong/game/types"
+	"image/color"
+	"log"
 )
 
 const (
@@ -25,11 +24,11 @@ type Game struct {
 	score       map[string]int
 }
 
-func NewGame(screen *ebiten.Image) Game {
+func NewGame(screen *ebiten.Image, basePath string) Game {
 	canvas := types.NewCanvas(screen, types.Vector{X: canvasPadding, Y: canvasPadding}, canvasPadding)
 	canvasWidth, _ := canvas.Image.Size()
 
-	ball := newBall(&canvas)
+	ball := newBall(&canvas, basePath)
 
 	leftPaddleColor := color.RGBA{R: 255, G: 0, B: 0, A: 255}
 	rightPaddleColor := color.RGBA{R: 0, G: 255, B: 0, A: 255}
@@ -85,8 +84,8 @@ func (g *Game) Tick(screen *ebiten.Image) error {
 	return nil
 }
 
-func LoadImage(path string) *ebiten.Image {
-	image, _, err := ebitenutil.NewImageFromFile(path, ebiten.FilterDefault)
+func LoadImage(resourcesBasePath, path string) *ebiten.Image {
+	image, _, err := ebitenutil.NewImageFromFile(resourcesBasePath+path, ebiten.FilterDefault)
 	if err != nil {
 		log.Fatal(err)
 	}

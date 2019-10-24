@@ -11,13 +11,13 @@ type Ball struct {
 	types.Object
 }
 
-func newBall(canvas *types.Canvas) Ball {
-	ballImage := LoadImage("resources/ball.png")
+func newBall(canvas *types.Canvas, basePath string) Ball {
+	ballImage := LoadImage(basePath, "/resources/ball.png")
 	ballDiameter, _ := ballImage.Size()
 	ballRadius := ballDiameter / 2
 	return Ball{
-		Radius: ballRadius,
-		Diameter:ballDiameter,
+		Radius:   ballRadius,
+		Diameter: ballDiameter,
 		Object: types.Object{
 			Pos:    canvas.Center,
 			Dir:    types.Vector{X: 1, Y: 1},
