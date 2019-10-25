@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -31,18 +32,11 @@ func main() {
 		defer close(done)
 		for {
 			_, message, err := c.ReadMessage()
-			log.Println(message[0])
-			log.Println(message[1])
-			switch string(message[0]) {
+			parts := strings.Split(string(message), " ")
+			id := parts[1]
+			switch parts[0] {
 			case "r":
-				id := string(message[1])
-				log.Println("Ich bin jetzt", id)
-			case "u":
-				log.Println(string(message[1]))
-				log.Println("moving up")
-			case "d":
-				log.Println(string(message[1]))
-				log.Println("moving down")
+				log.Println("Ich bin " + id)
 			default:
 				log.Println("defaultism")
 			}
@@ -66,8 +60,6 @@ func main() {
 		case <-interrupt:
 			log.Println("interrupt")
 
-			// Cleanly close the connection by sending a close message and then
-			// waiting (with timeout) for the server to close the connection.
 			err := c.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 			if err != nil {
 				log.Println("write close:", err)
