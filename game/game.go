@@ -1,11 +1,16 @@
 package game
 
 import (
+	"github.com/golang/freetype/truetype"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/hajimehoshi/ebiten/examples/resources/fonts"
+	"github.com/hajimehoshi/ebiten/text"
 	"github.com/splieth/chaos-pong/game/types"
+	"golang.org/x/image/font"
 	"image/color"
 	"log"
+	"strconv"
 	"time"
 )
 
@@ -25,6 +30,7 @@ type Game struct {
 	leftPaddle  *Paddle
 	rightPaddle *Paddle
 	score       map[string]int
+	scoreFont   font.Face
 }
 
 func NewGame(screen *ebiten.Image, basePath string) Game {
@@ -32,6 +38,13 @@ func NewGame(screen *ebiten.Image, basePath string) Game {
 	scoreCanvas := createScoreCanvas(screen, ballCanvas.Height+10+canvasPadding)
 
 	ball := newBall(&ballCanvas, basePath)
+
+	tt, _ := truetype.Parse(fonts.MPlus1pRegular_ttf)
+	scoreFont := truetype.NewFace(tt, &truetype.Options{
+		Size:    24,
+		DPI:     72,
+		Hinting: font.HintingFull,
+	})
 
 	leftPaddleColor := color.RGBA{R: 255, G: 0, B: 0, A: 255}
 	rightPaddleColor := color.RGBA{R: 0, G: 255, B: 0, A: 255}
@@ -52,6 +65,7 @@ func NewGame(screen *ebiten.Image, basePath string) Game {
 			player1: 0,
 			player2: 0,
 		},
+		scoreFont: scoreFont,
 	}
 }
 
@@ -74,11 +88,11 @@ func createScoreCanvas(screen *ebiten.Image, yCoordinate float64) types.Canvas {
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.ballCanvas.Fill()
 	g.scoreCanvas.Fill()
+	g.drawScores()
 	g.ball.Draw()
 	g.leftPaddle.Draw()
 	g.rightPaddle.Draw()
 	g.ballCanvas.Draw(screen)
-	//_ = ebitenutil.DebugPrint(g.scoreCanvas.Image, string(g.score[player1]) + ":" + string(g.score[player2]))
 	g.scoreCanvas.Draw(screen)
 }
 
@@ -91,6 +105,11 @@ func (g *Game) handleScores(wall Wall) {
 		g.score[player2]++
 		g.reset()
 	}
+}
+
+func (g *Game) drawScores() {
+	score := strconv.Itoa(g.score[player1]) + ":" + strconv.Itoa(g.score[player2])
+	text.Draw(g.scoreCanvas.Image, score, g.scoreFont, int(g.scoreCanvas.Width)/2-2*len(score), 25, color.White)
 }
 
 func (g *Game) reset() {
