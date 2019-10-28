@@ -30,7 +30,7 @@ var intersectTests = []struct {
 		fmt.Errorf("No intersection")},
 }
 
-func TestResponses(t *testing.T) {
+func TestLineIntersections(t *testing.T) {
 	for _, test := range intersectTests {
 		t.Run(test.name, func(t *testing.T) {
 			v, e := Intersect(test.line1, test.line2)
