@@ -22,7 +22,7 @@ type Client struct {
 
 var server Server
 var upgrader = websocket.Upgrader{} // use default options
-
+var messages = make(chan string)
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 func randSeq(n int) string {
@@ -82,6 +82,10 @@ func echo(w http.ResponseWriter, r *http.Request) {
 		default:
 			log.Println("defaultism")
 		}
+		select {
+		case msg := <-messages:
+			_ = c.WriteMessage(websocket.TextMessage, []byte(msg+" "+currentClient))
+		}
 	}
 	defer deregisterClient(currentClient)
 }
@@ -92,7 +96,7 @@ func main() {
 	go func() {
 		for {
 			if len(server.Clients) == 2 {
-				// TODO send all clients "s" to start the game via channel?
+				messages <- "s"
 			}
 		}
 	}()

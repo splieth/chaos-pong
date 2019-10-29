@@ -46,6 +46,7 @@ func main() {
 				log.Println("Ich bin " + id)
 				log.Println("Will control " + paddle + " paddle.")
 			case "s":
+				log.Println("Would start now but can't")
 				pong.StartGame()
 			default:
 				log.Println("defaultism")
