@@ -36,7 +36,9 @@ func main() {
 			id := parts[1]
 			switch parts[0] {
 			case "r":
+				paddle := parts[2]
 				log.Println("Ich bin " + id)
+				log.Println("Will control " + paddle + " paddle.")
 			default:
 				log.Println("defaultism")
 			}

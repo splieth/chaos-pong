@@ -33,9 +33,17 @@ func randSeq(n int) string {
 	return string(b)
 }
 
-func registerClient(clientId string) {
+func registerClient(clientId string) string {
 	server.Clients = append(server.Clients, Client{Id: clientId})
+	if len(server.Clients) == 1 {
+		return "left"
+	} else if len(server.Clients) == 2 {
+		return "right"
+	} else {
+		return "none"
+	}
 }
+
 func deregisterClient(clientId string) {
 	var newClients []Client
 	for _, c := range server.Clients {
@@ -64,9 +72,9 @@ func echo(w http.ResponseWriter, r *http.Request) {
 		}
 		switch string(message[0]) {
 		case "r":
-			registerClient(currentClient)
+			paddle := registerClient(currentClient)
 			log.Println(server.Clients)
-			c.WriteMessage(websocket.TextMessage, []byte("r "+currentClient))
+			c.WriteMessage(websocket.TextMessage, []byte("r "+currentClient+" "+paddle))
 
 		case "u":
 			log.Println("moving up")
