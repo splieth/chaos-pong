@@ -16,7 +16,7 @@ type Ball struct {
 }
 
 func newBall(canvas *types.Canvas, basePath string) Ball {
-	ballImage := LoadImage(basePath, "/resources/ball.png")
+	ballImage := LoadImage(basePath, "/../resources/ball.png")
 	ballDiameter, _ := ballImage.Size()
 	ballRadius := ballDiameter / 2
 	return Ball{

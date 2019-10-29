@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/hajimehoshi/ebiten"
+	"github.com/splieth/chaos-pong/game"
 	"log"
 	"net/url"
 	"os"
@@ -9,6 +11,10 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+)
+
+var (
+	pong game.Game
 )
 
 func main() {
@@ -39,6 +45,8 @@ func main() {
 				paddle := parts[2]
 				log.Println("Ich bin " + id)
 				log.Println("Will control " + paddle + " paddle.")
+			case "s":
+				pong.StartGame()
 			default:
 				log.Println("defaultism")
 			}
@@ -55,6 +63,17 @@ func main() {
 	_ = c.WriteMessage(websocket.TextMessage, []byte(register))
 	_ = c.WriteMessage(websocket.TextMessage, []byte(up))
 
+	//TODO extract
+	basePath := os.Getenv("PWD")
+	screen, _ := ebiten.NewImage(1280, 720, ebiten.FilterDefault)
+	width, height := screen.Size()
+	pong = game.NewGame(screen, basePath)
+
+	if err := ebiten.Run(pong.Tick, width, height, 1, "Chaos Pong!"); err != nil {
+		log.Fatal(err)
+	}
+
+	// TODO do we ever reach this?
 	for {
 		select {
 		case <-done:

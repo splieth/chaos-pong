@@ -31,6 +31,7 @@ type Game struct {
 	rightPaddle *Paddle
 	score       map[string]int
 	scoreFont   font.Face
+	started     bool
 }
 
 func NewGame(screen *ebiten.Image, basePath string) Game {
@@ -120,15 +121,20 @@ func (g *Game) reset() {
 
 func (g *Game) Tick(screen *ebiten.Image) error {
 	handleExit()
-	collidedWall := g.handleBallCanvasCollision()
-	leftPaddleOffset, rightPaddleOffset := getPaddleMoves()
-	g.leftPaddle.Move(leftPaddleOffset)
-	g.rightPaddle.Move(rightPaddleOffset)
-	g.handleScores(collidedWall)
-	g.handleBallPaddleCollision()
-	g.ball.Move()
-	g.Draw(screen)
-	return nil
+	if g.started {
+		collidedWall := g.handleBallCanvasCollision()
+		leftPaddleOffset, rightPaddleOffset := getPaddleMoves()
+		g.leftPaddle.Move(leftPaddleOffset)
+		g.rightPaddle.Move(rightPaddleOffset)
+		g.handleScores(collidedWall)
+		g.handleBallPaddleCollision()
+		g.ball.Move()
+		g.Draw(screen)
+		return nil
+	} else {
+		g.Draw(screen)
+		return nil
+	}
 }
 
 func LoadImage(resourcesBasePath, path string) *ebiten.Image {
@@ -137,4 +143,8 @@ func LoadImage(resourcesBasePath, path string) *ebiten.Image {
 		log.Fatal(err)
 	}
 	return image
+}
+
+func (g *Game) StartGame() {
+	g.started = true
 }

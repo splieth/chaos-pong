@@ -75,7 +75,6 @@ func echo(w http.ResponseWriter, r *http.Request) {
 			paddle := registerClient(currentClient)
 			log.Println(server.Clients)
 			c.WriteMessage(websocket.TextMessage, []byte("r "+currentClient+" "+paddle))
-
 		case "u":
 			log.Println("moving up")
 		case "d":
@@ -90,5 +89,12 @@ func echo(w http.ResponseWriter, r *http.Request) {
 func main() {
 	http.HandleFunc("/echo", echo)
 
+	go func() {
+		for {
+			if len(server.Clients) == 2 {
+				// TODO send all clients "s" to start the game via channel?
+			}
+		}
+	}()
 	log.Fatal(http.ListenAndServe(":4321", nil))
 }
