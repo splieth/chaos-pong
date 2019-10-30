@@ -12,17 +12,28 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
+type side int
+
+const (
+	LEFT = iota
+	RIGHT
+	NONE
+)
+
 type Server struct {
 	Clients []Client
+	Started bool
 }
 
 type Client struct {
-	Id string
+	Id      string
+	Side    side
+	Egress  chan string
+	Ingress chan string
 }
 
 var server Server
 var upgrader = websocket.Upgrader{} // use default options
-var messages = make(chan string)
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 func randSeq(n int) string {
@@ -33,15 +44,19 @@ func randSeq(n int) string {
 	return string(b)
 }
 
-func registerClient(clientId string) string {
-	server.Clients = append(server.Clients, Client{Id: clientId})
-	if len(server.Clients) == 1 {
-		return "left"
-	} else if len(server.Clients) == 2 {
-		return "right"
-	} else {
-		return "none"
+func createClient() Client {
+	client := Client{
+		Id:      randSeq(5),
+		Side:    NONE,
+		Ingress: make(chan string),
+		Egress:  make(chan string),
 	}
+	if len(server.Clients) == 1 {
+		client.Side = LEFT
+	} else if len(server.Clients) == 2 {
+		client.Side = RIGHT
+	}
+	return client
 }
 
 func deregisterClient(clientId string) {
@@ -54,51 +69,66 @@ func deregisterClient(clientId string) {
 	server.Clients = newClients
 }
 
-func echo(w http.ResponseWriter, r *http.Request) {
+func getMessages(conn *websocket.Conn, ch chan string) {
+	for {
+		_, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Println("read:", err)
+		}
+		ch <- string(message)
+	}
+}
+
+func register(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Print("upgrade:", err)
 		return
 	}
-	defer c.Close()
+	client := waitForRegister(c)
+	log.Println("Socket iz da")
+	client.Egress <- "r " + client.Id
+	defer deregisterClient(client.Id)
+	server.Clients = append(server.Clients, client)
+	go getMessages(c, client.Ingress)
+	for {
+		select {
+		case inboudMsg := <-client.Ingress:
+			log.Println(inboudMsg)
+		case outboundMsg := <-client.Egress:
+			log.Println(outboundMsg)
+			_ = c.WriteMessage(websocket.TextMessage, []byte(outboundMsg))
+		}
+	}
+}
 
-	currentClient := randSeq(5)
-
+func waitForRegister(c *websocket.Conn) Client {
 	for {
 		_, message, err := c.ReadMessage()
 		if err != nil {
 			log.Println("read:", err)
-			break
 		}
-		switch string(message[0]) {
+		msgType := string(message[0])
+		switch msgType {
 		case "r":
-			paddle := registerClient(currentClient)
-			log.Println(server.Clients)
-			c.WriteMessage(websocket.TextMessage, []byte("r "+currentClient+" "+paddle))
-		case "u":
-			log.Println("moving up")
-		case "d":
-			log.Println("moving down")
-		default:
-			log.Println("defaultism")
-		}
-		select {
-		case msg := <-messages:
-			_ = c.WriteMessage(websocket.TextMessage, []byte(msg+" "+currentClient))
+			return createClient()
 		}
 	}
-	defer deregisterClient(currentClient)
 }
 
 func main() {
-	http.HandleFunc("/echo", echo)
+	http.HandleFunc("/register", register)
 
 	go func() {
 		for {
-			if len(server.Clients) == 2 {
-				messages <- "s"
+			if !server.Started || len(server.Clients) == 2 {
+				for _, c := range server.Clients {
+					c.Egress <- "s"
+				}
+				server.Started = true
 			}
 		}
 	}()
+
 	log.Fatal(http.ListenAndServe(":4321", nil))
 }

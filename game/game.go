@@ -122,6 +122,7 @@ func (g *Game) reset() {
 func (g *Game) Tick(screen *ebiten.Image) error {
 	handleExit()
 	if g.started {
+		log.Printf("Started playing")
 		collidedWall := g.handleBallCanvasCollision()
 		leftPaddleOffset, rightPaddleOffset := getPaddleMoves()
 		g.leftPaddle.Move(leftPaddleOffset)
