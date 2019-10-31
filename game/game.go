@@ -32,6 +32,8 @@ type Game struct {
 	score       map[string]int
 	scoreFont   font.Face
 	started     bool
+	player      Player
+	npc         Player
 }
 
 func NewGame(screen *ebiten.Image, basePath string) Game {
@@ -91,8 +93,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.scoreCanvas.Fill()
 	g.drawScores()
 	g.ball.Draw()
-	g.leftPaddle.Draw()
-	g.rightPaddle.Draw()
+	//g.leftPaddle.Draw()
+	//g.rightPaddle.Draw()
 	g.ballCanvas.Draw(screen)
 	g.scoreCanvas.Draw(screen)
 }
@@ -122,11 +124,11 @@ func (g *Game) reset() {
 func (g *Game) Tick(screen *ebiten.Image) error {
 	handleExit()
 	if g.started {
-		log.Printf("Started playing")
+		//log.Printf("Started playing")
 		collidedWall := g.handleBallCanvasCollision()
 		leftPaddleOffset, rightPaddleOffset := getPaddleMoves()
-		g.leftPaddle.Move(leftPaddleOffset)
-		g.rightPaddle.Move(rightPaddleOffset)
+		g.player.Move(leftPaddleOffset)
+		g.npc.Move(rightPaddleOffset)
 		g.handleScores(collidedWall)
 		g.handleBallPaddleCollision()
 		g.ball.Move()
@@ -146,6 +148,8 @@ func LoadImage(resourcesBasePath, path string) *ebiten.Image {
 	return image
 }
 
-func (g *Game) StartGame() {
+func (g *Game) StartGame(side string) {
+	p := Player{side: side}
+	g.player = p
 	g.started = true
 }

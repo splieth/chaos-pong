@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
 	"math/rand"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -15,9 +18,9 @@ func init() {
 type side int
 
 const (
-	LEFT = iota
-	RIGHT
-	NONE
+	LEFT  = 0
+	RIGHT = 1
+	NONE  = 2
 )
 
 type Server struct {
@@ -51,9 +54,9 @@ func createClient() Client {
 		Ingress: make(chan string),
 		Egress:  make(chan string),
 	}
-	if len(server.Clients) == 1 {
+	if len(server.Clients) == 0 {
 		client.Side = LEFT
-	} else if len(server.Clients) == 2 {
+	} else if len(server.Clients) == 1 {
 		client.Side = RIGHT
 	}
 	return client
@@ -86,20 +89,30 @@ func register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	client := waitForRegister(c)
-	log.Println("Socket iz da")
-	client.Egress <- "r " + client.Id
-	defer deregisterClient(client.Id)
+	go sendRegistrationMessage(client)
 	server.Clients = append(server.Clients, client)
 	go getMessages(c, client.Ingress)
 	for {
 		select {
-		case inboudMsg := <-client.Ingress:
-			log.Println(inboudMsg)
+		case inboundMsg := <-client.Ingress:
+			if strings.HasPrefix(inboundMsg, "m") {
+				parts := strings.Split(inboundMsg, " ")
+				clientId := parts[1]
+				moved := parts[2]
+				log.Printf("%s said: %s", clientId, moved)
+			} else {
+				log.Println(inboundMsg)
+			}
 		case outboundMsg := <-client.Egress:
-			log.Println(outboundMsg)
 			_ = c.WriteMessage(websocket.TextMessage, []byte(outboundMsg))
 		}
 	}
+	defer deregisterClient(client.Id)
+}
+
+func sendRegistrationMessage(client Client) {
+	registerMessage := "r " + client.Id
+	client.Egress <- registerMessage
 }
 
 func waitForRegister(c *websocket.Conn) Client {
@@ -111,6 +124,7 @@ func waitForRegister(c *websocket.Conn) Client {
 		msgType := string(message[0])
 		switch msgType {
 		case "r":
+			fmt.Println("Received register")
 			return createClient()
 		}
 	}
@@ -122,10 +136,10 @@ func main() {
 	go func() {
 		for {
 			if !server.Started || len(server.Clients) == 2 {
-				for _, c := range server.Clients {
-					c.Egress <- "s"
-				}
 				server.Started = true
+				for _, c := range server.Clients {
+					c.Egress <- "s " + c.Id + " " + strconv.Itoa(int(c.Side)) //rock solid!
+				}
 			}
 		}
 	}()
