@@ -32,8 +32,8 @@ type Game struct {
 	score       map[string]int
 	scoreFont   font.Face
 	started     bool
-	player      Player
-	npc         Player
+	player      *Player
+	npc         *Player
 }
 
 func NewGame(screen *ebiten.Image, basePath string) Game {
@@ -58,12 +58,17 @@ func NewGame(screen *ebiten.Image, basePath string) Game {
 	leftPaddle := NewPaddle(paddleWidth, paddleHeight, leftPaddlePos, leftPaddleColor, &ballCanvas)
 	rightPaddle := NewPaddle(paddleWidth, paddleHeight, rightPaddlePos, rightPaddleColor, &ballCanvas)
 
+	player := NewPlayer("left", paddleWidth, paddleHeight, leftPaddlePos, leftPaddleColor, &ballCanvas)
+	//npc := NewPlayer("right", paddleWidth, paddleHeight, rightPaddlePos, rightPaddleColor, &ballCanvas)
+
 	return Game{
 		ball:        &ball,
 		ballCanvas:  &ballCanvas,
 		scoreCanvas: &scoreCanvas,
 		leftPaddle:  &leftPaddle,
 		rightPaddle: &rightPaddle,
+		player:      &player,
+		//npc:         npc,
 		score: map[string]int{
 			player1: 0,
 			player2: 0,
@@ -93,8 +98,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.scoreCanvas.Fill()
 	g.drawScores()
 	g.ball.Draw()
-	//g.leftPaddle.Draw()
-	//g.rightPaddle.Draw()
+	g.player.Draw()
+	//g.npc.Draw()
 	g.ballCanvas.Draw(screen)
 	g.scoreCanvas.Draw(screen)
 }
@@ -150,6 +155,6 @@ func LoadImage(resourcesBasePath, path string) *ebiten.Image {
 
 func (g *Game) StartGame(side string) {
 	p := Player{side: side}
-	g.player = p
+	g.player = &p
 	g.started = true
 }

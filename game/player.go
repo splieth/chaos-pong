@@ -1,15 +1,17 @@
 package game
 
 import (
+	"image/color"
+	"log"
+	"math"
+
 	"github.com/hajimehoshi/ebiten"
 	"github.com/splieth/chaos-pong/game/types"
-	"image/color"
-	"math"
 )
 
 type Player struct {
 	side   string
-	paddle Paddle
+	paddle *Paddle
 }
 
 type Paddle struct {
@@ -19,9 +21,10 @@ type Paddle struct {
 }
 
 func NewPlayer(side string, width, height int, pos types.Vector, color color.Color, canvas *types.Canvas) Player {
+	paddle := NewPaddle(width, height, pos, color, canvas)
 	return Player{
 		side:   side,
-		paddle: NewPaddle(width, height, pos, color, canvas),
+		paddle: &paddle,
 	}
 }
 
@@ -43,7 +46,10 @@ func NewPaddle(width, height int, pos types.Vector, color color.Color, canvas *t
 
 func (p *Player) Draw() {
 	options := ebiten.DrawImageOptions{}
+	log.Println("Paddle: ", p.paddle)
+	log.Println("Options: ", options)
 	options.GeoM.Translate(p.paddle.Pos.X, p.paddle.Pos.Y)
+
 	_ = p.paddle.Canvas.Image.DrawImage(p.paddle.Image, &options)
 }
 
