@@ -135,9 +135,11 @@ func main() {
 
 	go func() {
 		for {
-			if !server.Started || len(server.Clients) == 2 {
+			if !server.Started && len(server.Clients) == 2 {
+				log.Println("Clients are ready, time to start ze game!")
 				server.Started = true
 				for _, c := range server.Clients {
+					log.Println("Sending start message to", c.Id)
 					c.Egress <- "s " + c.Id + " " + strconv.Itoa(int(c.Side)) //rock solid!
 				}
 			}
