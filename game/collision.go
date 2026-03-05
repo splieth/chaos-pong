@@ -33,18 +33,18 @@ func (g *Game) handleBallCanvasCollision() Wall {
 
 func (g *Game) handleBallPaddleCollision() {
 	ballPos := g.ball.Pos
-	leftPaddlePos := g.leftPaddle.Pos
-	rightPaddlePos := g.rightPaddle.Pos
-	if ballPos.X <= leftPaddlePos.X+g.leftPaddle.Width &&
-		ballPos.Y <= leftPaddlePos.Y+g.leftPaddle.Height &&
-		ballPos.Y >= leftPaddlePos.Y {
+	leftPaddle := g.player.paddle
+	rightPaddle := g.npc.paddle
+	if ballPos.X <= leftPaddle.Pos.X+leftPaddle.Width &&
+		ballPos.Y <= leftPaddle.Pos.Y+leftPaddle.Height &&
+		ballPos.Y >= leftPaddle.Pos.Y {
 		g.ball.Dir.InvertX()
 		g.ball.Dir.Randomize()
 		g.ball.Velocity++
 	}
-	if ballPos.X+float64(g.ball.Diameter) >= rightPaddlePos.X &&
-		ballPos.Y <= rightPaddlePos.Y+g.rightPaddle.Height &&
-		ballPos.Y >= rightPaddlePos.Y {
+	if ballPos.X+float64(g.ball.Diameter) >= rightPaddle.Pos.X &&
+		ballPos.Y <= rightPaddle.Pos.Y+rightPaddle.Height &&
+		ballPos.Y >= rightPaddle.Pos.Y {
 		g.ball.Dir.InvertX()
 		g.ball.Dir.Randomize()
 		g.ball.Velocity++

@@ -1,7 +1,7 @@
 package game
 
 import (
-	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/splieth/chaos-pong/game/types"
 )
 
@@ -16,7 +16,7 @@ type Ball struct {
 }
 
 func newBall(canvas *types.Canvas, basePath string) Ball {
-	ballImage := LoadImage(basePath, "/../resources/ball.png")
+	ballImage := LoadImage(basePath, "/resources/ball.png")
 	ballDiameter, _ := ballImage.Size()
 	ballRadius := ballDiameter / 2
 	return Ball{
@@ -42,5 +42,5 @@ func (b *Ball) Move() {
 func (b *Ball) Draw() {
 	imageOptions := ebiten.DrawImageOptions{}
 	imageOptions.GeoM.Translate(b.Pos.X, b.Pos.Y)
-	_ = b.Canvas.Image.DrawImage(b.Image, &imageOptions)
+	b.Canvas.Image.DrawImage(b.Image, &imageOptions)
 }

@@ -2,10 +2,9 @@ package game
 
 import (
 	"image/color"
-	"log"
 	"math"
 
-	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/splieth/chaos-pong/game/types"
 )
 
@@ -29,8 +28,8 @@ func NewPlayer(side string, width, height int, pos types.Vector, color color.Col
 }
 
 func NewPaddle(width, height int, pos types.Vector, color color.Color, canvas *types.Canvas) Paddle {
-	image, _ := ebiten.NewImage(width, height, ebiten.FilterDefault)
-	_ = image.Fill(color)
+	image := ebiten.NewImage(width, height)
+	image.Fill(color)
 	return Paddle{
 		Width:  paddleWidth,
 		Height: paddleHeight,
@@ -46,11 +45,8 @@ func NewPaddle(width, height int, pos types.Vector, color color.Color, canvas *t
 
 func (p *Player) Draw() {
 	options := ebiten.DrawImageOptions{}
-	log.Println("Paddle: ", p.paddle)
-	log.Println("Options: ", options)
 	options.GeoM.Translate(p.paddle.Pos.X, p.paddle.Pos.Y)
-
-	_ = p.paddle.Canvas.Image.DrawImage(p.paddle.Image, &options)
+	p.paddle.Canvas.Image.DrawImage(p.paddle.Image, &options)
 }
 
 func (p *Player) Move(offset types.Vector) {

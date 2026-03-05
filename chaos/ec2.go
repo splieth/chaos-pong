@@ -7,12 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2/ec2iface"
 	"log"
 	"math/rand"
-	"time"
 )
-
-func init() {
-	rand.Seed(time.Now().Unix())
-}
 
 type EC2InstanceTerminateChaos struct {
 	Chaos

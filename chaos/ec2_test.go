@@ -5,6 +5,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2/ec2iface"
 	"github.com/stretchr/testify/assert"
 	"math/rand"
+	"strconv"
 	"testing"
 )
 
@@ -46,7 +47,7 @@ func (m mockEC2Client) TerminateInstances(in *ec2.TerminateInstancesInput) (*ec2
 }
 
 func generateInstanceId() *string {
-	id := "i-" + string(rand.Int())
+	id := "i-" + strconv.Itoa(rand.Int())
 	return &id
 }
 

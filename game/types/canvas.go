@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/v2"
 	"image/color"
 )
 
@@ -16,7 +16,7 @@ type Canvas struct {
 }
 
 func NewCanvas(originPoint Vector, canvasWidth, canvasHeight float64) Canvas {
-	canvasImage, _ := ebiten.NewImage(int(canvasWidth), int(canvasHeight), ebiten.FilterDefault)
+	canvasImage := ebiten.NewImage(int(canvasWidth), int(canvasHeight))
 	return Canvas{
 		Pos:    originPoint,
 		Width:  canvasWidth,
@@ -28,11 +28,11 @@ func NewCanvas(originPoint Vector, canvasWidth, canvasHeight float64) Canvas {
 }
 
 func (c *Canvas) Fill() {
-	_ = c.Image.Fill(c.Color)
+	c.Image.Fill(c.Color)
 }
 
 func (c *Canvas) Draw(screen *ebiten.Image) {
 	options := ebiten.DrawImageOptions{}
 	options.GeoM.Translate(c.Pos.X, c.Pos.Y)
-	_ = screen.DrawImage(c.Image, &options)
+	screen.DrawImage(c.Image, &options)
 }

@@ -2,10 +2,10 @@ package game
 
 import (
 	"github.com/golang/freetype/truetype"
-	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/ebitenutil"
-	"github.com/hajimehoshi/ebiten/examples/resources/fonts"
-	"github.com/hajimehoshi/ebiten/text"
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
+	"github.com/hajimehoshi/ebiten/v2/text"
 	"github.com/splieth/chaos-pong/game/types"
 	"golang.org/x/image/font"
 	"image/color"
@@ -24,21 +24,21 @@ const (
 )
 
 type Game struct {
+	screenWidth  int
+	screenHeight int
 	ball        *Ball
 	ballCanvas  *types.Canvas
 	scoreCanvas *types.Canvas
-	leftPaddle  *Paddle
-	rightPaddle *Paddle
 	score       map[string]int
-	scoreFont   font.Face
-	started     bool
-	player      *Player
-	npc         *Player
+	scoreFont    font.Face
+	started      bool
+	player       *Player
+	npc          *Player
 }
 
-func NewGame(screen *ebiten.Image, basePath string) Game {
-	ballCanvas := createBallCanvas(screen)
-	scoreCanvas := createScoreCanvas(screen, ballCanvas.Height+10+canvasPadding)
+func NewGame(screenWidth, screenHeight int, basePath string) Game {
+	ballCanvas := createBallCanvas(screenWidth, screenHeight)
+	scoreCanvas := createScoreCanvas(screenWidth, ballCanvas.Height+10+canvasPadding)
 
 	ball := newBall(&ballCanvas, basePath)
 
@@ -55,42 +55,52 @@ func NewGame(screen *ebiten.Image, basePath string) Game {
 	leftPaddlePos := types.Vector{X: 0, Y: 0}
 	rightPaddlePos := types.Vector{X: ballCanvas.Width - paddleWidth, Y: 0}
 
-	leftPaddle := NewPaddle(paddleWidth, paddleHeight, leftPaddlePos, leftPaddleColor, &ballCanvas)
-	rightPaddle := NewPaddle(paddleWidth, paddleHeight, rightPaddlePos, rightPaddleColor, &ballCanvas)
-
 	player := NewPlayer("left", paddleWidth, paddleHeight, leftPaddlePos, leftPaddleColor, &ballCanvas)
-	//npc := NewPlayer("right", paddleWidth, paddleHeight, rightPaddlePos, rightPaddleColor, &ballCanvas)
+	npc := NewPlayer("right", paddleWidth, paddleHeight, rightPaddlePos, rightPaddleColor, &ballCanvas)
 
 	return Game{
+		screenWidth:  screenWidth,
+		screenHeight: screenHeight,
 		ball:        &ball,
 		ballCanvas:  &ballCanvas,
 		scoreCanvas: &scoreCanvas,
-		leftPaddle:  &leftPaddle,
-		rightPaddle: &rightPaddle,
 		player:      &player,
-		//npc:         npc,
+		npc:          &npc,
 		score: map[string]int{
 			player1: 0,
 			player2: 0,
 		},
 		scoreFont: scoreFont,
+		started:   true,
 	}
 }
 
-func createBallCanvas(screen *ebiten.Image) types.Canvas {
-	screenWidth, screenHeight := screen.Size()
+func createBallCanvas(screenWidth, screenHeight int) types.Canvas {
 	canvasWidth := float64(screenWidth) - 2*canvasPadding
 	canvasHeight := float64(screenHeight) - 2*canvasPadding - scoreCanvasHeight
 	ballCanvas := types.NewCanvas(types.Vector{X: canvasPadding, Y: canvasPadding}, canvasWidth, canvasHeight)
 	return ballCanvas
 }
 
-func createScoreCanvas(screen *ebiten.Image, yCoordinate float64) types.Canvas {
-	screenWidth, _ := screen.Size()
+func createScoreCanvas(screenWidth int, yCoordinate float64) types.Canvas {
 	canvasWidth := float64(screenWidth) - 2*canvasPadding
 	scoreCanvas := types.NewCanvas(types.Vector{X: canvasPadding, Y: yCoordinate}, canvasWidth, scoreCanvasHeight)
 	scoreCanvas.Color = color.Black
 	return scoreCanvas
+}
+
+func (g *Game) Update() error {
+	handleExit()
+	if g.started {
+		collidedWall := g.handleBallCanvasCollision()
+		leftPaddleOffset, rightPaddleOffset := getPaddleMoves()
+		g.player.Move(leftPaddleOffset)
+		g.npc.Move(rightPaddleOffset)
+		g.handleScores(collidedWall)
+		g.handleBallPaddleCollision()
+		g.ball.Move()
+	}
+	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
@@ -99,9 +109,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.drawScores()
 	g.ball.Draw()
 	g.player.Draw()
-	//g.npc.Draw()
+	g.npc.Draw()
 	g.ballCanvas.Draw(screen)
 	g.scoreCanvas.Draw(screen)
+}
+
+func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
+	return g.screenWidth, g.screenHeight
 }
 
 func (g *Game) handleScores(wall Wall) {
@@ -126,27 +140,8 @@ func (g *Game) reset() {
 	g.ball.Velocity = InitialBallSpeed
 }
 
-func (g *Game) Tick(screen *ebiten.Image) error {
-	handleExit()
-	if g.started {
-		//log.Printf("Started playing")
-		collidedWall := g.handleBallCanvasCollision()
-		leftPaddleOffset, rightPaddleOffset := getPaddleMoves()
-		g.player.Move(leftPaddleOffset)
-		g.npc.Move(rightPaddleOffset)
-		g.handleScores(collidedWall)
-		g.handleBallPaddleCollision()
-		g.ball.Move()
-		g.Draw(screen)
-		return nil
-	} else {
-		g.Draw(screen)
-		return nil
-	}
-}
-
 func LoadImage(resourcesBasePath, path string) *ebiten.Image {
-	image, _, err := ebitenutil.NewImageFromFile(resourcesBasePath+path, ebiten.FilterDefault)
+	image, _, err := ebitenutil.NewImageFromFile(resourcesBasePath + path)
 	if err != nil {
 		log.Fatal(err)
 	}

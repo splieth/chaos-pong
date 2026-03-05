@@ -8,12 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
 
 type side int
 

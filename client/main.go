@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/websocket"
-	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/splieth/chaos-pong/game"
 	"log"
 	"net/url"
@@ -43,10 +43,7 @@ func main() {
 	}
 	defer c.Close()
 
-	//done := make(chan struct{})
-
 	go func() {
-		//defer close(done)
 		for {
 			_, message, err := c.ReadMessage()
 			if err == nil && len(message) > 0 {
@@ -59,14 +56,12 @@ func main() {
 				case "s":
 					side := parts[1]
 					log.Println("I spuil auf der Seite " + side)
-					//log.Println("Geht los für " + id)
 					pong.StartGame(side)
 				}
 				if err != nil {
 					log.Println("read:", err)
 					return
 				}
-				//log.Printf("recv: %s", message)
 			}
 		}
 	}()
@@ -80,14 +75,14 @@ func main() {
 		}
 	}()
 
-	//TODO extract
-	ebiten.SetRunnableInBackground(true) // only for local debugging in order to run 2 clients. But we'll need that for the server
+	ebiten.SetRunnableOnUnfocused(true) // only for local debugging in order to run 2 clients
 	basePath := os.Getenv("PWD")
-	screen, _ := ebiten.NewImage(1280, 720, ebiten.FilterDefault)
-	width, height := screen.Size()
-	pong = game.NewGame(screen, basePath)
+	pong = game.NewGame(1280, 720, basePath)
 
-	if err := ebiten.Run(pong.Tick, width, height, 1, "Chaos Pong!"); err != nil {
+	ebiten.SetWindowSize(1280, 720)
+	ebiten.SetWindowTitle("Chaos Pong!")
+
+	if err := ebiten.RunGame(&pong); err != nil {
 		log.Fatal(err)
 	}
 }

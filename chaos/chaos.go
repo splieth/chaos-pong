@@ -2,7 +2,6 @@ package chaos
 
 import (
 	"math/rand"
-	"time"
 )
 
 type Chaos interface {
@@ -17,10 +16,6 @@ type Result struct {
 var functions = []Chaos{
 	EC2InstanceTerminateChaos{},
 	EBSDestroyChaos{},
-}
-
-func init() {
-	rand.Seed(time.Now().Unix())
 }
 
 func Random() {

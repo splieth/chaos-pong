@@ -1,23 +1,20 @@
 package main
 
 import (
-	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/splieth/chaos-pong/game"
 	"log"
 	"os"
 )
 
-var (
-	pong game.Game
-)
-
 func main() {
 	basePath := os.Getenv("PWD")
-	screen, _ := ebiten.NewImage(1280, 720, ebiten.FilterDefault)
-	width, height := screen.Size()
-	pong = game.NewGame(screen, basePath)
+	pong := game.NewGame(1280, 720, basePath)
 
-	if err := ebiten.Run(pong.Tick, width, height, 1, "Chaos Pong!"); err != nil {
+	ebiten.SetWindowSize(1280, 720)
+	ebiten.SetWindowTitle("Chaos Pong!")
+
+	if err := ebiten.RunGame(&pong); err != nil {
 		log.Fatal(err)
 	}
 }
