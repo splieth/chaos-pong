@@ -1,31 +1,50 @@
-package chaos
+package aws
 
 import (
+	"slices"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/ec2/ec2iface"
+	"github.com/splieth/chaos-pong/chaos"
 	"log"
 	"math/rand"
 )
 
+func init() {
+	chaos.RegisterProvider("aws", newAWSChaos)
+}
+
+func newAWSChaos(cfg chaos.ProviderConfig) []chaos.Chaos {
+	client := ec2ClientWithConfig(cfg.Options["region"], cfg.Options["profile"])
+
+	var fns []chaos.Chaos
+	if len(cfg.Actions) == 0 || slices.Contains(cfg.Actions, "ec2-instance-terminate") {
+		fns = append(fns, EC2InstanceTerminateChaos{client: client})
+	}
+	if len(cfg.Actions) == 0 || slices.Contains(cfg.Actions, "ebs-destroy") {
+		fns = append(fns, EBSDestroyChaos{client: client})
+	}
+	return fns
+}
+
 type EC2InstanceTerminateChaos struct {
-	Chaos
+	client *ec2.EC2
 }
 
 type EBSDestroyChaos struct {
-	Chaos
+	client *ec2.EC2
 }
 
-func (e EBSDestroyChaos) Terminate() Result {
-	client := ec2Client()
-	instances := listInstances(client, []ec2.Instance{}, nil)
+func (e EBSDestroyChaos) Terminate() chaos.Result {
+	instances := listInstances(e.client, []ec2.Instance{}, nil)
 	instance := instances[rand.Intn(len(instances))]
-	_, err := terminateEbsVolume(client, instance.BlockDeviceMappings[0].Ebs.VolumeId)
+	_, err := terminateEbsVolume(e.client, instance.BlockDeviceMappings[0].Ebs.VolumeId)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return Result{Success: true, Message: "Terminated stuff"}
+	return chaos.Result{Success: true, Message: "Terminated EBS volume"}
 }
 
 func terminateEbsVolume(client *ec2.EC2, volumeId *string) (*string, error) {
@@ -48,22 +67,30 @@ func terminateEbsVolume(client *ec2.EC2, volumeId *string) (*string, error) {
 	return volumeId, nil
 }
 
-func (e EC2InstanceTerminateChaos) Terminate() Result {
-	client := ec2Client()
-	instances := listInstances(client, []ec2.Instance{}, nil)
+func (e EC2InstanceTerminateChaos) Terminate() chaos.Result {
+	instances := listInstances(e.client, []ec2.Instance{}, nil)
 	instance := instances[rand.Intn(len(instances))]
-	_, err := terminateInstance(client, []*string{instance.InstanceId})
+	_, err := terminateInstance(e.client, []*string{instance.InstanceId})
 	if err != nil {
 		log.Fatal(err)
 	}
-	return Result{Success: true, Message: "Terminated stuff"}
+	return chaos.Result{Success: true, Message: "Terminated EC2 instance"}
 }
 
-func ec2Client() *ec2.EC2 {
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
+func ec2ClientWithConfig(region, profile string) *ec2.EC2 {
+	opts := session.Options{
 		SharedConfigState: session.SharedConfigEnable,
-	}))
+	}
+	if profile != "" {
+		opts.Profile = profile
+	}
+	awsCfg := aws.Config{}
+	if region != "" {
+		awsCfg.Region = aws.String(region)
+	}
+	opts.Config = awsCfg
 
+	sess := session.Must(session.NewSessionWithOptions(opts))
 	return ec2.New(sess)
 }
 

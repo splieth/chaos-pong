@@ -1,0 +1,14 @@
+providers:
+  aws:
+    enabled: true
+    region: "eu-central-1"
+    profile: "default"
+    actions:
+      - ec2-instance-terminate
+      - ebs-destroy
+  gcp:
+    enabled: false
+    project: "my-project"
+    zone: "europe-west1-b"
+    actions:
+      - instance-terminate

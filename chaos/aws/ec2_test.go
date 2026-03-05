@@ -1,4 +1,4 @@
-package chaos
+package aws
 
 import (
 	"github.com/aws/aws-sdk-go/service/ec2"
