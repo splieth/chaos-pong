@@ -33,7 +33,7 @@ func TestNewCanvas_ImageDimensions(t *testing.T) {
 	canvas := NewCanvas(pos, 320, 240)
 
 	// then
-	w, h := canvas.Image.Size()
+	w, h := canvas.Image.Bounds().Dx(), canvas.Image.Bounds().Dy()
 	assert.Equal(t, 320, w)
 	assert.Equal(t, 240, h)
 }

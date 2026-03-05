@@ -2,59 +2,70 @@ package game
 
 import (
 	"image/color"
-	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/splieth/chaos-pong/game/types"
 )
 
+// paddleSpeed is the default movement speed for paddles.
+const paddleSpeed = 10
+
+// Player represents a game participant with a side (left/right) and a paddle.
 type Player struct {
 	side   string
 	paddle *Paddle
 }
 
+// Paddle is the rectangular controller a player uses to deflect the ball.
 type Paddle struct {
 	Width, Height float64
-	Color         color.Color
 	types.Object
 }
 
-func NewPlayer(side string, width, height int, pos types.Vector, color color.Color, canvas *types.Canvas) Player {
-	paddle := NewPaddle(width, height, pos, color, canvas)
+// NewPlayer creates a player on the given side with a paddle at the
+// specified position and color.
+func NewPlayer(side string, width, height int, pos types.Vector, clr color.Color, canvas *types.Canvas) Player {
+	paddle := NewPaddle(width, height, pos, clr, canvas)
 	return Player{
 		side:   side,
 		paddle: &paddle,
 	}
 }
 
-func NewPaddle(width, height int, pos types.Vector, color color.Color, canvas *types.Canvas) Paddle {
+// NewPaddle creates a paddle with the given dimensions, position, color,
+// and parent canvas.
+func NewPaddle(width, height int, pos types.Vector, clr color.Color, canvas *types.Canvas) Paddle {
 	image := ebiten.NewImage(width, height)
-	image.Fill(color)
+	image.Fill(clr)
 	return Paddle{
-		Width:  paddleWidth,
-		Height: paddleHeight,
+		Width:  float64(width),
+		Height: float64(height),
 		Object: types.Object{
 			Pos:      pos,
-			Dir:      types.Vector{X: 0, Y: 0},
 			Image:    image,
 			Canvas:   canvas,
-			Velocity: 10,
+			Velocity: paddleSpeed,
 		},
 	}
 }
 
+// Draw renders the paddle sprite onto the canvas at its current position.
 func (p *Player) Draw() {
-	options := ebiten.DrawImageOptions{}
-	options.GeoM.Translate(p.paddle.Pos.X, p.paddle.Pos.Y)
-	p.paddle.Canvas.Image.DrawImage(p.paddle.Image, &options)
+	opts := &ebiten.DrawImageOptions{}
+	opts.GeoM.Translate(p.paddle.Pos.X, p.paddle.Pos.Y)
+	p.paddle.Canvas.Image.DrawImage(p.paddle.Image, opts)
 }
 
+// Move applies a directional offset to the paddle, clamped to canvas bounds.
+// The offset is normalized and scaled by paddle velocity before being applied.
+// A zero-length offset is ignored.
 func (p *Player) Move(offset types.Vector) {
-	if offset.Norm() > 0 {
-		offset.Normalize()
-		offset.Multiply(p.paddle.Velocity)
-		p.paddle.Pos.Add(offset)
-		p.paddle.Pos.Y = math.Max(p.paddle.Pos.Y, 0)
-		p.paddle.Pos.Y = math.Min(p.paddle.Pos.Y, p.paddle.Canvas.Height-p.paddle.Height)
+	if offset.Norm() == 0 {
+		return
 	}
+	offset.Normalize()
+	offset.Multiply(p.paddle.Velocity)
+	p.paddle.Pos.Add(offset)
+	p.paddle.Pos.Y = max(p.paddle.Pos.Y, 0)
+	p.paddle.Pos.Y = min(p.paddle.Pos.Y, p.paddle.Canvas.Height-p.paddle.Height)
 }

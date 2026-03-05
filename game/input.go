@@ -1,29 +1,38 @@
 package game
 
 import (
+	"os"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/splieth/chaos-pong/game/types"
-	"os"
 )
 
+var (
+	up   = types.Vector{X: 0, Y: -1}
+	down = types.Vector{X: 0, Y: 1}
+)
+
+// getPaddleMoves reads keyboard state and returns directional offset vectors
+// for the left paddle (W/S keys) and right paddle (Up/Down keys).
 func getPaddleMoves() (types.Vector, types.Vector) {
-	leftPaddleOffset := types.Vector{X: 0, Y: 0}
-	rightPaddleOffset := types.Vector{X: 0, Y: 0}
+	var left, right types.Vector
+
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
-		leftPaddleOffset = types.Vector{X: 0, Y: -1}
+		left = up
+	} else if ebiten.IsKeyPressed(ebiten.KeyS) {
+		left = down
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyS) {
-		leftPaddleOffset = types.Vector{X: 0, Y: 1}
-	}
+
 	if ebiten.IsKeyPressed(ebiten.KeyUp) {
-		rightPaddleOffset = types.Vector{X: 0, Y: -1}
+		right = up
+	} else if ebiten.IsKeyPressed(ebiten.KeyDown) {
+		right = down
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyDown) {
-		rightPaddleOffset = types.Vector{X: 0, Y: 1}
-	}
-	return leftPaddleOffset, rightPaddleOffset
+
+	return left, right
 }
 
+// handleExit terminates the process when Escape is pressed.
 func handleExit() {
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
 		os.Exit(0)
