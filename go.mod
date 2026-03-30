@@ -1,6 +1,6 @@
 module github.com/splieth/chaos-pong
 
-go 1.22.0
+go 1.25.0
 
 require (
 	github.com/aws/aws-sdk-go v1.55.6
@@ -8,7 +8,8 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/hajimehoshi/ebiten/v2 v2.8.8
 	github.com/stretchr/testify v1.10.0
-	golang.org/x/image v0.24.0
+	golang.org/x/image v0.38.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -21,5 +22,4 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.25.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
