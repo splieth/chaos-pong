@@ -8,7 +8,7 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/hajimehoshi/ebiten/v2 v2.8.8
 	github.com/stretchr/testify v1.10.0
-	golang.org/x/image v0.38.0
+	golang.org/x/image v0.41.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
